@@ -41,7 +41,13 @@ export function deploymentPolicyStatements(scope: Construct): iam.PolicyStatemen
     new iam.PolicyStatement({
       sid: 'ApiGateway',
       actions: ['apigateway:*'],
-      resources: [`arn:aws:apigateway:${r}::/apis`, `arn:aws:apigateway:${r}::/apis/*`],
+      // /tags/* is required: creating a tagged HTTP API issues
+      // POST /tags/<api-arn> in addition to POST /v2/apis.
+      resources: [
+        `arn:aws:apigateway:${r}::/apis`,
+        `arn:aws:apigateway:${r}::/apis/*`,
+        `arn:aws:apigateway:${r}::/tags/*`,
+      ],
     }),
     new iam.PolicyStatement({
       sid: 'DynamoDB',
