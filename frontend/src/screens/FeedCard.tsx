@@ -53,7 +53,7 @@ export function FeedCard({
     }
   }
 
-  const entryUnknown = card.risks.some(
+  const entryUnknown = (card.risks ?? []).some(
     (r) => r.type === 'ENTRY_RULE' && r.severity === 'UNKNOWN',
   );
 
@@ -84,7 +84,7 @@ export function FeedCard({
 
       <CardSection title="Why it matches">
         <ul className="tb-reasons">
-          {card.reasons.map((reason, i) => (
+          {(card.reasons ?? []).map((reason, i) => (
             <li key={i}>{reason}</li>
           ))}
         </ul>
@@ -96,7 +96,19 @@ export function FeedCard({
       </CardSection>
 
       <CardSection title="Score breakdown">
-        <ScoreBars components={card.components} riskPenalty={card.riskPenalty} />
+        <ScoreBars
+          components={
+            card.components ?? {
+              airfare: 0,
+              weather: 0,
+              interest: 0,
+              travelTime: 0,
+              freshness: 0,
+              novelty: 0,
+            }
+          }
+          riskPenalty={card.riskPenalty}
+        />
       </CardSection>
 
       <CardSection title="What we found">
@@ -150,14 +162,14 @@ export function FeedCard({
         )}
       </CardSection>
 
-      {(card.risks.length > 0 || card.uncertainties.length > 0) && (
+      {((card.risks ?? []).length > 0 || (card.uncertainties ?? []).length > 0) && (
         <CardSection title="What could change">
-          {card.risks.map((risk, i) => (
+          {(card.risks ?? []).map((risk, i) => (
             <RiskBlock key={i} risk={risk} />
           ))}
-          {card.uncertainties.length > 0 && (
+          {(card.uncertainties ?? []).length > 0 && (
             <ul className="tb-reasons" style={{ marginTop: 8 }}>
-              {card.uncertainties.map((u, i) => (
+              {(card.uncertainties ?? []).map((u, i) => (
                 <li key={i} className="tb-muted">
                   {u}
                 </li>
@@ -202,7 +214,7 @@ export function FeedCard({
       )}
 
       <div className="tb-card-section">
-        <SourceChips sources={card.sources} />
+        <SourceChips sources={card.sources ?? []} />
       </div>
     </Card>
   );
