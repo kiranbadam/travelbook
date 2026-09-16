@@ -1,1 +1,0 @@
-{"_note":"PLACEHOLDER — the deploy workflow overwrites this file with the real Cognito config at deploy time. Never commit real pool IDs here.","region":"","userPoolClientId":"","userPoolId":""}
