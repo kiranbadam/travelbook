@@ -50,8 +50,9 @@ are prefixed `travelbook`.
 
 EventBridge Scheduler `travelbook-advisory-refresh` (rate 6h) → SQS,
 state DISABLED until providers are configured.
-SSM `/travelbook/dev/*`: ticketmaster/api-key (SecureString, UNSET),
-llm/provider (template), llm/api-key (SecureString, UNSET), duffel/mode (mock).
+SSM `/travelbook/dev/*`: llm/provider (template) and duffel/mode (mock)
+in the stack; ticketmaster/api-key and llm/api-key created out-of-band as
+SecureString (UNSET) — see deviation 10.
 Cognito `travelbook-users`: email sign-in, self-signup, MFA off, no hosted UI.
 Alarms: worker errors > 3 in 5 min; DLQ depth >= 1. Log retention 7 days.
 ```
@@ -82,9 +83,12 @@ write `frontend/dist/config.json` → `s3 sync` → CloudFront invalidation.
 
 ### 2. Post-deploy manual steps
 
-- Set real SSM values: `/travelbook/dev/ticketmaster/api-key`,
-  `/travelbook/dev/llm/api-key` (keep SecureString), `/travelbook/dev/llm/provider`,
-  `/travelbook/dev/duffel/mode`.
+- Create the two secret SSM params out-of-band (CFN can't make
+  SecureString — deviation 10):
+  `aws ssm put-parameter --name /travelbook/dev/ticketmaster/api-key --value UNSET --type SecureString`
+  and the same for `/travelbook/dev/llm/api-key`. Set real values later
+  with `--overwrite` (keep SecureString). `/travelbook/dev/llm/provider`
+  and `/travelbook/dev/duffel/mode` are managed by the stack.
 - When providers are ready: enable the `travelbook-advisory-refresh`
   schedule (console or CLI `aws scheduler update-schedule --state ENABLED`).
 - Optional: subscribe the distribution to the CloudFront **flat-rate Free
@@ -102,7 +106,8 @@ The change set for `travelbook-dev` must contain ONLY these resource types
   `AWS::IAM::ManagedPolicy` attachments
 - `AWS::Cognito::UserPool` · `AWS::Cognito::UserPoolClient`
 - `AWS::ApiGatewayV2::{Api,Authorizer,Integration,Route,Stage,Deployment}`
-- `AWS::SSM::Parameter` (4, standard tier, AWS-owned key)
+- `AWS::SSM::Parameter` (2 in-stack, standard tier; 2 SecureString
+  created out-of-band — deviation 10)
 - `AWS::Scheduler::Schedule` (1, DISABLED)
 - `AWS::S3::Bucket` (1, private) · `AWS::CloudFront::{Distribution,
   OriginAccessControl, Function}`
@@ -167,3 +172,12 @@ scheduler state is DISABLED.
    one-active-job guard can filter by owner server-side (plan said KEYS_ONLY).
 9. **Worker queue send.** `WorkerFunction` gets `FEED_QUEUE_URL` and
    `sqs:SendMessage` on the feed-jobs queue for its delayed-requeue path.
+10. **SecureString SSM params live outside the stack.** CloudFormation's
+    EarlyValidation hook in us-west-2 rejects `AWS::SSM::Parameter` with
+    `Type=SecureString` (verified 2026-09-16 with a minimal test stack),
+    so `/travelbook/dev/ticketmaster/api-key` and
+    `/travelbook/dev/llm/api-key` are created out-of-band as SecureString
+    via the CLI after deploy instead of in the template. The stack manages
+    the other two (`llm/provider`, `duffel/mode`); the backend treats
+    missing/UNSET as mock mode. Re-add them to the template if the hook
+    is fixed.
