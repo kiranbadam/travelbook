@@ -1,0 +1,2516 @@
+{
+ "Description": "TravelBook dev stack — serverless, free-tier only, us-west-2",
+ "Resources": {
+  "TableCD117FA1": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "pk",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "sk",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "gsi1pk",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "gsi1sk",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "gsi2pk",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "gsi2sk",
+      "AttributeType": "S"
+     }
+    ],
+    "GlobalSecondaryIndexes": [
+     {
+      "IndexName": "GSI1",
+      "KeySchema": [
+       {
+        "AttributeName": "gsi1pk",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "gsi1sk",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      },
+      "ProvisionedThroughput": {
+       "ReadCapacityUnits": 5,
+       "WriteCapacityUnits": 5
+      }
+     },
+     {
+      "IndexName": "GSI2",
+      "KeySchema": [
+       {
+        "AttributeName": "gsi2pk",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "gsi2sk",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "NonKeyAttributes": [
+        "owner",
+        "state"
+       ],
+       "ProjectionType": "INCLUDE"
+      },
+      "ProvisionedThroughput": {
+       "ReadCapacityUnits": 5,
+       "WriteCapacityUnits": 5
+      }
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "pk",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "sk",
+      "KeyType": "RANGE"
+     }
+    ],
+    "ProvisionedThroughput": {
+     "ReadCapacityUnits": 5,
+     "WriteCapacityUnits": 5
+    },
+    "SSESpecification": {
+     "SSEEnabled": false
+    },
+    "TableName": "travelbook",
+    "Tags": [
+     {
+      "Key": "project",
+      "Value": "travelbook"
+     }
+    ],
+    "TimeToLiveSpecification": {
+     "AttributeName": "ttl",
+     "Enabled": true
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Table/Resource"
+   }
+  },
+  "FeedJobsDlqBA0B023E": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "MessageRetentionPeriod": 1209600,
+    "QueueName": "travelbook-feed-jobs-dlq",
+    "Tags": [
+     {
+      "Key": "project",
+      "Value": "travelbook"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/FeedJobsDlq/Resource"
+   }
+  },
+  "FeedJobs79B742F3": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "MessageRetentionPeriod": 345600,
+    "QueueName": "travelbook-feed-jobs",
+    "RedrivePolicy": {
+     "deadLetterTargetArn": {
+      "Fn::GetAtt": [
+       "FeedJobsDlqBA0B023E",
+       "Arn"
+      ]
+     },
+     "maxReceiveCount": 2
+    },
+    "Tags": [
+     {
+      "Key": "project",
+      "Value": "travelbook"
+     }
+    ],
+    "VisibilityTimeout": 1200
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/FeedJobs/Resource"
+   }
+  },
+  "ApiRole1873F438": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ],
+    "RoleName": "travelbook-api-fn",
+    "Tags": [
+     {
+      "Key": "project",
+      "Value": "travelbook"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/ApiRole/Resource"
+   }
+  },
+  "ApiRoleDefaultPolicyCFEBAD31": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:Query",
+        "dynamodb:TransactWriteItems",
+        "dynamodb:ConditionCheckItem"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "TableCD117FA1",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TableCD117FA1",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "sqs:SendMessage",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "FeedJobs79B742F3",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "cognito-idp:ListUsers",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Users0A0EEA89",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ApiRoleDefaultPolicyCFEBAD31",
+    "Roles": [
+     {
+      "Ref": "ApiRole1873F438"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/ApiRole/DefaultPolicy/Resource"
+   }
+  },
+  "WorkerRole8DD27D41": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ],
+    "RoleName": "travelbook-worker-fn",
+    "Tags": [
+     {
+      "Key": "project",
+      "Value": "travelbook"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/WorkerRole/Resource"
+   }
+  },
+  "WorkerRoleDefaultPolicy1750E153": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:Query",
+        "dynamodb:TransactWriteItems",
+        "dynamodb:ConditionCheckItem"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "TableCD117FA1",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TableCD117FA1",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "sqs:ReceiveMessage",
+        "sqs:DeleteMessage",
+        "sqs:GetQueueAttributes",
+        "sqs:SendMessage"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "FeedJobs79B742F3",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "ssm:GetParameter",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:ssm:us-west-2:",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":parameter/travelbook/dev/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "sqs:ReceiveMessage",
+        "sqs:ChangeMessageVisibility",
+        "sqs:GetQueueUrl",
+        "sqs:DeleteMessage",
+        "sqs:GetQueueAttributes"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "FeedJobs79B742F3",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "WorkerRoleDefaultPolicy1750E153",
+    "Roles": [
+     {
+      "Ref": "WorkerRole8DD27D41"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/WorkerRole/DefaultPolicy/Resource"
+   }
+  },
+  "ApiLogGroup1DEDFC07": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/aws/lambda/travelbook-api",
+    "RetentionInDays": 7,
+    "Tags": [
+     {
+      "Key": "project",
+      "Value": "travelbook"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/ApiLogGroup/Resource"
+   }
+  },
+  "WorkerLogGroup31FDBE4A": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/aws/lambda/travelbook-worker",
+    "RetentionInDays": 7,
+    "Tags": [
+     {
+      "Key": "project",
+      "Value": "travelbook"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/WorkerLogGroup/Resource"
+   }
+  },
+  "ApiFunctionCE271BD4": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "arm64"
+    ],
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2"
+     },
+     "S3Key": "0f9774cc0b6890f6b1d5d88fe802ab448f92800a103741dbaa57010e64fea80a.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "TABLE_NAME": {
+       "Ref": "TableCD117FA1"
+      },
+      "FEED_QUEUE_URL": {
+       "Ref": "FeedJobs79B742F3"
+      },
+      "SSM_PREFIX": "/travelbook/dev",
+      "USER_POOL_ID": {
+       "Ref": "Users0A0EEA89"
+      }
+     }
+    },
+    "FunctionName": "travelbook-api",
+    "Handler": "index.handler",
+    "LoggingConfig": {
+     "LogGroup": {
+      "Ref": "ApiLogGroup1DEDFC07"
+     }
+    },
+    "MemorySize": 512,
+    "ReservedConcurrentExecutions": 5,
+    "Role": {
+     "Fn::GetAtt": [
+      "ApiRole1873F438",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Tags": [
+     {
+      "Key": "project",
+      "Value": "travelbook"
+     }
+    ],
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "ApiRoleDefaultPolicyCFEBAD31",
+    "ApiRole1873F438"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/ApiFunction/Resource",
+    "aws:asset:path": "asset.0f9774cc0b6890f6b1d5d88fe802ab448f92800a103741dbaa57010e64fea80a",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
+  },
+  "WorkerFunctionACE6A4B0": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "arm64"
+    ],
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2"
+     },
+     "S3Key": "affdc76ec1458c248d662958376092352dfaaa6a009bc2c383d6cd05c0775466.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "TABLE_NAME": {
+       "Ref": "TableCD117FA1"
+      },
+      "FEED_QUEUE_URL": {
+       "Ref": "FeedJobs79B742F3"
+      },
+      "SSM_PREFIX": "/travelbook/dev"
+     }
+    },
+    "FunctionName": "travelbook-worker",
+    "Handler": "index.handler",
+    "LoggingConfig": {
+     "LogGroup": {
+      "Ref": "WorkerLogGroup31FDBE4A"
+     }
+    },
+    "MemorySize": 1024,
+    "ReservedConcurrentExecutions": 2,
+    "Role": {
+     "Fn::GetAtt": [
+      "WorkerRole8DD27D41",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Tags": [
+     {
+      "Key": "project",
+      "Value": "travelbook"
+     }
+    ],
+    "Timeout": 180
+   },
+   "DependsOn": [
+    "WorkerRoleDefaultPolicy1750E153",
+    "WorkerRole8DD27D41"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/WorkerFunction/Resource",
+    "aws:asset:path": "asset.affdc76ec1458c248d662958376092352dfaaa6a009bc2c383d6cd05c0775466",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
+  },
+  "WorkerFunctionSqsEventSourceTravelBookDevFeedJobsCAC5D00B37FDF1BE": {
+   "Type": "AWS::Lambda::EventSourceMapping",
+   "Properties": {
+    "BatchSize": 1,
+    "Enabled": true,
+    "EventSourceArn": {
+     "Fn::GetAtt": [
+      "FeedJobs79B742F3",
+      "Arn"
+     ]
+    },
+    "FunctionName": {
+     "Ref": "WorkerFunctionACE6A4B0"
+    },
+    "Tags": [
+     {
+      "Key": "project",
+      "Value": "travelbook"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/WorkerFunction/SqsEventSource:TravelBookDevFeedJobsCAC5D00B/Resource"
+   }
+  },
+  "Users0A0EEA89": {
+   "Type": "AWS::Cognito::UserPool",
+   "Properties": {
+    "AccountRecoverySetting": {
+     "RecoveryMechanisms": [
+      {
+       "Name": "verified_phone_number",
+       "Priority": 1
+      },
+      {
+       "Name": "verified_email",
+       "Priority": 2
+      }
+     ]
+    },
+    "AdminCreateUserConfig": {
+     "AllowAdminCreateUserOnly": false
+    },
+    "AutoVerifiedAttributes": [
+     "email"
+    ],
+    "EmailVerificationMessage": "The verification code to your new account is {####}",
+    "EmailVerificationSubject": "Verify your new account",
+    "MfaConfiguration": "OFF",
+    "Schema": [
+     {
+      "Mutable": true,
+      "Name": "email",
+      "Required": true
+     }
+    ],
+    "SmsVerificationMessage": "The verification code to your new account is {####}",
+    "UserPoolName": "travelbook-users",
+    "UserPoolTags": {
+     "project": "travelbook"
+    },
+    "UsernameAttributes": [
+     "email"
+    ],
+    "VerificationMessageTemplate": {
+     "DefaultEmailOption": "CONFIRM_WITH_CODE",
+     "EmailMessage": "The verification code to your new account is {####}",
+     "EmailSubject": "Verify your new account",
+     "SmsMessage": "The verification code to your new account is {####}"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Users/Resource"
+   }
+  },
+  "UsersWebClient8EE36D42": {
+   "Type": "AWS::Cognito::UserPoolClient",
+   "Properties": {
+    "AllowedOAuthFlows": [
+     "implicit",
+     "code"
+    ],
+    "AllowedOAuthFlowsUserPoolClient": true,
+    "AllowedOAuthScopes": [
+     "profile",
+     "phone",
+     "email",
+     "openid",
+     "aws.cognito.signin.user.admin"
+    ],
+    "CallbackURLs": [
+     "https://example.com"
+    ],
+    "ClientName": "travelbook-web-client",
+    "ExplicitAuthFlows": [
+     "ALLOW_USER_PASSWORD_AUTH",
+     "ALLOW_USER_SRP_AUTH",
+     "ALLOW_REFRESH_TOKEN_AUTH"
+    ],
+    "GenerateSecret": false,
+    "SupportedIdentityProviders": [
+     "COGNITO"
+    ],
+    "UserPoolId": {
+     "Ref": "Users0A0EEA89"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Users/WebClient/Resource"
+   }
+  },
+  "ApiF70053CD": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "Name": "travelbook-api",
+    "ProtocolType": "HTTP",
+    "Tags": {
+     "project": "travelbook"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/Resource"
+   }
+  },
+  "ApiPUTv1preferencesApiIntegrationC4964B84": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "ApiFunctionCE271BD4",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/PUT--v1--preferences/ApiIntegration/Resource"
+   }
+  },
+  "ApiPUTv1preferencesApiIntegrationPermission4E4844D8": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ApiFunctionCE271BD4",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-west-2:",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "ApiF70053CD"
+       },
+       "/*/*/v1/preferences"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/PUT--v1--preferences/ApiIntegration-Permission"
+   }
+  },
+  "ApiPUTv1preferences28ECA61C": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "AuthorizationType": "JWT",
+    "AuthorizerId": {
+     "Ref": "ApiJwtAuthorizer84FEA7B0"
+    },
+    "RouteKey": "PUT /v1/preferences",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "ApiPUTv1preferencesApiIntegrationC4964B84"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/PUT--v1--preferences/Resource"
+   }
+  },
+  "ApiJwtAuthorizer84FEA7B0": {
+   "Type": "AWS::ApiGatewayV2::Authorizer",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "AuthorizerType": "JWT",
+    "IdentitySource": [
+     "$request.header.Authorization"
+    ],
+    "JwtConfiguration": {
+     "Audience": [
+      {
+       "Ref": "UsersWebClient8EE36D42"
+      }
+     ],
+     "Issuer": {
+      "Fn::Join": [
+       "",
+       [
+        "https://cognito-idp.us-west-2.amazonaws.com/",
+        {
+         "Ref": "Users0A0EEA89"
+        }
+       ]
+      ]
+     }
+    },
+    "Name": "travelbook-jwt"
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/JwtAuthorizer/Resource"
+   }
+  },
+  "ApiPOSTv1feedjobsApiIntegrationPermission86C15423": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ApiFunctionCE271BD4",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-west-2:",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "ApiF70053CD"
+       },
+       "/*/*/v1/feed-jobs"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/POST--v1--feed-jobs/ApiIntegration-Permission"
+   }
+  },
+  "ApiPOSTv1feedjobs09679579": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "AuthorizationType": "JWT",
+    "AuthorizerId": {
+     "Ref": "ApiJwtAuthorizer84FEA7B0"
+    },
+    "RouteKey": "POST /v1/feed-jobs",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "ApiPUTv1preferencesApiIntegrationC4964B84"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/POST--v1--feed-jobs/Resource"
+   }
+  },
+  "ApiGETv1feedjobsidApiIntegrationPermission3B858E79": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ApiFunctionCE271BD4",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-west-2:",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "ApiF70053CD"
+       },
+       "/*/*/v1/feed-jobs/{id}"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/GET--v1--feed-jobs--{id}/ApiIntegration-Permission"
+   }
+  },
+  "ApiGETv1feedjobsid39D3F24B": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "AuthorizationType": "JWT",
+    "AuthorizerId": {
+     "Ref": "ApiJwtAuthorizer84FEA7B0"
+    },
+    "RouteKey": "GET /v1/feed-jobs/{id}",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "ApiPUTv1preferencesApiIntegrationC4964B84"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/GET--v1--feed-jobs--{id}/Resource"
+   }
+  },
+  "ApiGETv1feedApiIntegrationPermissionD9472A31": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ApiFunctionCE271BD4",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-west-2:",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "ApiF70053CD"
+       },
+       "/*/*/v1/feed"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/GET--v1--feed/ApiIntegration-Permission"
+   }
+  },
+  "ApiGETv1feed99FF046D": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "AuthorizationType": "JWT",
+    "AuthorizerId": {
+     "Ref": "ApiJwtAuthorizer84FEA7B0"
+    },
+    "RouteKey": "GET /v1/feed",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "ApiPUTv1preferencesApiIntegrationC4964B84"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/GET--v1--feed/Resource"
+   }
+  },
+  "ApiGETv1destinationsidApiIntegrationPermission835EAFC7": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ApiFunctionCE271BD4",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-west-2:",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "ApiF70053CD"
+       },
+       "/*/*/v1/destinations/{id}"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/GET--v1--destinations--{id}/ApiIntegration-Permission"
+   }
+  },
+  "ApiGETv1destinationsid6F1DB5B0": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "AuthorizationType": "JWT",
+    "AuthorizerId": {
+     "Ref": "ApiJwtAuthorizer84FEA7B0"
+    },
+    "RouteKey": "GET /v1/destinations/{id}",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "ApiPUTv1preferencesApiIntegrationC4964B84"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/GET--v1--destinations--{id}/Resource"
+   }
+  },
+  "ApiPOSTv1reactionsApiIntegrationPermission107B1EF7": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ApiFunctionCE271BD4",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-west-2:",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "ApiF70053CD"
+       },
+       "/*/*/v1/reactions"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/POST--v1--reactions/ApiIntegration-Permission"
+   }
+  },
+  "ApiPOSTv1reactions3111D0F8": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "AuthorizationType": "JWT",
+    "AuthorizerId": {
+     "Ref": "ApiJwtAuthorizer84FEA7B0"
+    },
+    "RouteKey": "POST /v1/reactions",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "ApiPUTv1preferencesApiIntegrationC4964B84"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/POST--v1--reactions/Resource"
+   }
+  },
+  "ApiPOSTv1tripsApiIntegrationPermission6CE27F3E": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ApiFunctionCE271BD4",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-west-2:",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "ApiF70053CD"
+       },
+       "/*/*/v1/trips"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/POST--v1--trips/ApiIntegration-Permission"
+   }
+  },
+  "ApiPOSTv1trips39009DEF": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "AuthorizationType": "JWT",
+    "AuthorizerId": {
+     "Ref": "ApiJwtAuthorizer84FEA7B0"
+    },
+    "RouteKey": "POST /v1/trips",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "ApiPUTv1preferencesApiIntegrationC4964B84"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/POST--v1--trips/Resource"
+   }
+  },
+  "ApiGETv1tripsApiIntegrationPermission5D3010A6": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ApiFunctionCE271BD4",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-west-2:",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "ApiF70053CD"
+       },
+       "/*/*/v1/trips"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/GET--v1--trips/ApiIntegration-Permission"
+   }
+  },
+  "ApiGETv1tripsF8C4C8C5": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "AuthorizationType": "JWT",
+    "AuthorizerId": {
+     "Ref": "ApiJwtAuthorizer84FEA7B0"
+    },
+    "RouteKey": "GET /v1/trips",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "ApiPUTv1preferencesApiIntegrationC4964B84"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/GET--v1--trips/Resource"
+   }
+  },
+  "ApiGETv1tripsidApiIntegrationPermission0AC70F26": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ApiFunctionCE271BD4",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-west-2:",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "ApiF70053CD"
+       },
+       "/*/*/v1/trips/{id}"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/GET--v1--trips--{id}/ApiIntegration-Permission"
+   }
+  },
+  "ApiGETv1tripsidAF31CB8F": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "AuthorizationType": "JWT",
+    "AuthorizerId": {
+     "Ref": "ApiJwtAuthorizer84FEA7B0"
+    },
+    "RouteKey": "GET /v1/trips/{id}",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "ApiPUTv1preferencesApiIntegrationC4964B84"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/GET--v1--trips--{id}/Resource"
+   }
+  },
+  "ApiPUTv1tripsidvotesmeApiIntegrationPermission149E9119": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ApiFunctionCE271BD4",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-west-2:",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "ApiF70053CD"
+       },
+       "/*/*/v1/trips/{id}/votes/me"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/PUT--v1--trips--{id}--votes--me/ApiIntegration-Permission"
+   }
+  },
+  "ApiPUTv1tripsidvotesme80A2EC7F": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "AuthorizationType": "JWT",
+    "AuthorizerId": {
+     "Ref": "ApiJwtAuthorizer84FEA7B0"
+    },
+    "RouteKey": "PUT /v1/trips/{id}/votes/me",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "ApiPUTv1preferencesApiIntegrationC4964B84"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/PUT--v1--trips--{id}--votes--me/Resource"
+   }
+  },
+  "ApiPOSTv1tripsidmembersApiIntegrationPermission48E73868": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ApiFunctionCE271BD4",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-west-2:",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "ApiF70053CD"
+       },
+       "/*/*/v1/trips/{id}/members"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/POST--v1--trips--{id}--members/ApiIntegration-Permission"
+   }
+  },
+  "ApiPOSTv1tripsidmembers52934970": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "AuthorizationType": "JWT",
+    "AuthorizerId": {
+     "Ref": "ApiJwtAuthorizer84FEA7B0"
+    },
+    "RouteKey": "POST /v1/trips/{id}/members",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "ApiPUTv1preferencesApiIntegrationC4964B84"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/POST--v1--trips--{id}--members/Resource"
+   }
+  },
+  "ApiGETv1friendsApiIntegrationPermissionE99D6C37": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ApiFunctionCE271BD4",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-west-2:",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "ApiF70053CD"
+       },
+       "/*/*/v1/friends"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/GET--v1--friends/ApiIntegration-Permission"
+   }
+  },
+  "ApiGETv1friends6C47623C": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "AuthorizationType": "JWT",
+    "AuthorizerId": {
+     "Ref": "ApiJwtAuthorizer84FEA7B0"
+    },
+    "RouteKey": "GET /v1/friends",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "ApiPUTv1preferencesApiIntegrationC4964B84"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/GET--v1--friends/Resource"
+   }
+  },
+  "ApiPOSTv1friendsrequestsApiIntegrationPermission44738A24": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ApiFunctionCE271BD4",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-west-2:",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "ApiF70053CD"
+       },
+       "/*/*/v1/friends/requests"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/POST--v1--friends--requests/ApiIntegration-Permission"
+   }
+  },
+  "ApiPOSTv1friendsrequestsFFD37970": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "AuthorizationType": "JWT",
+    "AuthorizerId": {
+     "Ref": "ApiJwtAuthorizer84FEA7B0"
+    },
+    "RouteKey": "POST /v1/friends/requests",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "ApiPUTv1preferencesApiIntegrationC4964B84"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/POST--v1--friends--requests/Resource"
+   }
+  },
+  "ApiGETv1friendsrequestsincomingApiIntegrationPermission9E9B14D4": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ApiFunctionCE271BD4",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-west-2:",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "ApiF70053CD"
+       },
+       "/*/*/v1/friends/requests/incoming"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/GET--v1--friends--requests--incoming/ApiIntegration-Permission"
+   }
+  },
+  "ApiGETv1friendsrequestsincoming15F6E1DE": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "AuthorizationType": "JWT",
+    "AuthorizerId": {
+     "Ref": "ApiJwtAuthorizer84FEA7B0"
+    },
+    "RouteKey": "GET /v1/friends/requests/incoming",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "ApiPUTv1preferencesApiIntegrationC4964B84"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/GET--v1--friends--requests--incoming/Resource"
+   }
+  },
+  "ApiPOSTv1friendsacceptApiIntegrationPermissionE2CDAA16": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ApiFunctionCE271BD4",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-west-2:",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "ApiF70053CD"
+       },
+       "/*/*/v1/friends/accept"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/POST--v1--friends--accept/ApiIntegration-Permission"
+   }
+  },
+  "ApiPOSTv1friendsaccept682737E3": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "AuthorizationType": "JWT",
+    "AuthorizerId": {
+     "Ref": "ApiJwtAuthorizer84FEA7B0"
+    },
+    "RouteKey": "POST /v1/friends/accept",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "ApiPUTv1preferencesApiIntegrationC4964B84"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/POST--v1--friends--accept/Resource"
+   }
+  },
+  "ApiGETv1friendsidfeedApiIntegrationPermission3B5A887F": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ApiFunctionCE271BD4",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-west-2:",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "ApiF70053CD"
+       },
+       "/*/*/v1/friends/{id}/feed"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/GET--v1--friends--{id}--feed/ApiIntegration-Permission"
+   }
+  },
+  "ApiGETv1friendsidfeedCFB4027F": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "AuthorizationType": "JWT",
+    "AuthorizerId": {
+     "Ref": "ApiJwtAuthorizer84FEA7B0"
+    },
+    "RouteKey": "GET /v1/friends/{id}/feed",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "ApiPUTv1preferencesApiIntegrationC4964B84"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/GET--v1--friends--{id}--feed/Resource"
+   }
+  },
+  "ApiPOSTv1feedshareApiIntegrationPermission267DB9F2": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ApiFunctionCE271BD4",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-west-2:",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "ApiF70053CD"
+       },
+       "/*/*/v1/feed/share"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/POST--v1--feed--share/ApiIntegration-Permission"
+   }
+  },
+  "ApiPOSTv1feedshare1F44AC7F": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "AuthorizationType": "JWT",
+    "AuthorizerId": {
+     "Ref": "ApiJwtAuthorizer84FEA7B0"
+    },
+    "RouteKey": "POST /v1/feed/share",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "ApiPUTv1preferencesApiIntegrationC4964B84"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/POST--v1--feed--share/Resource"
+   }
+  },
+  "ApiGETv1tripsidrecommendationsApiIntegrationPermission4A0A0827": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ApiFunctionCE271BD4",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-west-2:",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "ApiF70053CD"
+       },
+       "/*/*/v1/trips/{id}/recommendations"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/GET--v1--trips--{id}--recommendations/ApiIntegration-Permission"
+   }
+  },
+  "ApiGETv1tripsidrecommendations1DA5FEF5": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "AuthorizationType": "JWT",
+    "AuthorizerId": {
+     "Ref": "ApiJwtAuthorizer84FEA7B0"
+    },
+    "RouteKey": "GET /v1/trips/{id}/recommendations",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "ApiPUTv1preferencesApiIntegrationC4964B84"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/GET--v1--trips--{id}--recommendations/Resource"
+   }
+  },
+  "ApiGEThealthApiIntegrationPermission8F72FA5E": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ApiFunctionCE271BD4",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-west-2:",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "ApiF70053CD"
+       },
+       "/*/*/health"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/GET--health/ApiIntegration-Permission"
+   }
+  },
+  "ApiGEThealthA417CA46": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "GET /health",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "ApiPUTv1preferencesApiIntegrationC4964B84"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/Api/GET--health/Resource"
+   }
+  },
+  "DefaultStageEE28A986": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "AutoDeploy": true,
+    "DefaultRouteSettings": {
+     "ThrottlingBurstLimit": 40,
+     "ThrottlingRateLimit": 20
+    },
+    "StageName": "$default",
+    "Tags": {
+     "project": "travelbook"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/DefaultStage/Resource"
+   }
+  },
+  "LlmProvider30A9C469": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "Description": "TravelBook dev placeholder — set a real value before enabling providers.",
+    "Name": "/travelbook/dev/llm/provider",
+    "Tags": {
+     "project": "travelbook"
+    },
+    "Type": "String",
+    "Value": "template"
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/LlmProvider/Resource"
+   }
+  },
+  "DuffelModeFBFAE08C": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "Description": "TravelBook dev placeholder — set a real value before enabling providers.",
+    "Name": "/travelbook/dev/duffel/mode",
+    "Tags": {
+     "project": "travelbook"
+    },
+    "Type": "String",
+    "Value": "mock"
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/DuffelMode/Resource"
+   }
+  },
+  "SchedulerRole59E73443": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "scheduler.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": "sqs:SendMessage",
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::GetAtt": [
+           "FeedJobs79B742F3",
+           "Arn"
+          ]
+         }
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "QueueSend"
+     }
+    ],
+    "RoleName": "travelbook-scheduler-exec",
+    "Tags": [
+     {
+      "Key": "project",
+      "Value": "travelbook"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/SchedulerRole/Resource"
+   }
+  },
+  "AdvisoryRefresh": {
+   "Type": "AWS::Scheduler::Schedule",
+   "Properties": {
+    "Description": "Coarse advisory refresh. DISABLED until providers are configured.",
+    "FlexibleTimeWindow": {
+     "Mode": "OFF"
+    },
+    "Name": "travelbook-advisory-refresh",
+    "ScheduleExpression": "rate(6 hours)",
+    "State": "DISABLED",
+    "Target": {
+     "Arn": {
+      "Fn::GetAtt": [
+       "FeedJobs79B742F3",
+       "Arn"
+      ]
+     },
+     "Input": "{\"type\":\"advisory-refresh\"}",
+     "RoleArn": {
+      "Fn::GetAtt": [
+       "SchedulerRole59E73443",
+       "Arn"
+      ]
+     }
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/AdvisoryRefresh"
+   }
+  },
+  "WebBucket12880F5B": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketName": {
+     "Fn::Join": [
+      "",
+      [
+       "travelbook-web-",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       "-us-west-2"
+      ]
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    },
+    "Tags": [
+     {
+      "Key": "project",
+      "Value": "travelbook"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/WebBucket/Resource"
+   }
+  },
+  "WebBucketPolicy95D08FAA": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "WebBucket12880F5B"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:*",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "WebBucket12880F5B",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "WebBucket12880F5B",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "s3:GetObject",
+       "Condition": {
+        "StringEquals": {
+         "AWS:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":cloudfront::",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":distribution/",
+            {
+             "Ref": "WebDistribution59C46482"
+            }
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "cloudfront.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "WebBucket12880F5B",
+            "Arn"
+           ]
+          },
+          "/*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/WebBucket/Policy/Resource"
+   }
+  },
+  "StripApiPrefix88D2DA73": {
+   "Type": "AWS::CloudFront::Function",
+   "Properties": {
+    "AutoPublish": true,
+    "FunctionCode": "function handler(event) {\n  var request = event.request;\n  if (request.uri.startsWith('/api/')) {\n    request.uri = request.uri.substring(4);\n  }\n  return request;\n}",
+    "FunctionConfig": {
+     "Comment": "travelbook-strip-api-prefix",
+     "Runtime": "cloudfront-js-1.0"
+    },
+    "Name": "travelbook-strip-api-prefix",
+    "Tags": [
+     {
+      "Key": "project",
+      "Value": "travelbook"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/StripApiPrefix/Resource"
+   }
+  },
+  "WebDistributionOrigin1S3OriginAccessControl83AD2F73": {
+   "Type": "AWS::CloudFront::OriginAccessControl",
+   "Properties": {
+    "OriginAccessControlConfig": {
+     "Name": "travelbookdevWebDistributionOrigin1S3OriginAccessControl4286D0C3",
+     "OriginAccessControlOriginType": "s3",
+     "SigningBehavior": "always",
+     "SigningProtocol": "sigv4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/WebDistribution/Origin1/S3OriginAccessControl/Resource"
+   }
+  },
+  "WebDistribution59C46482": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "CacheBehaviors": [
+      {
+       "AllowedMethods": [
+        "GET",
+        "HEAD",
+        "OPTIONS",
+        "PUT",
+        "PATCH",
+        "POST",
+        "DELETE"
+       ],
+       "CachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+       "Compress": true,
+       "FunctionAssociations": [
+        {
+         "EventType": "viewer-request",
+         "FunctionARN": {
+          "Fn::GetAtt": [
+           "StripApiPrefix88D2DA73",
+           "FunctionARN"
+          ]
+         }
+        }
+       ],
+       "OriginRequestPolicyId": "b689b0a8-53d0-40ab-baf2-68738e2966ac",
+       "PathPattern": "/api/*",
+       "TargetOriginId": "TravelBookDevWebDistributionOrigin2916B80B9",
+       "ViewerProtocolPolicy": "redirect-to-https"
+      }
+     ],
+     "Comment": "travelbook web app (dev)",
+     "CustomErrorResponses": [
+      {
+       "ErrorCode": 403,
+       "ResponseCode": 200,
+       "ResponsePagePath": "/index.html"
+      },
+      {
+       "ErrorCode": 404,
+       "ResponseCode": 200,
+       "ResponsePagePath": "/index.html"
+      }
+     ],
+     "DefaultCacheBehavior": {
+      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+      "Compress": true,
+      "TargetOriginId": "TravelBookDevWebDistributionOrigin1DF976B56",
+      "ViewerProtocolPolicy": "redirect-to-https"
+     },
+     "DefaultRootObject": "index.html",
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "IPV6Enabled": true,
+     "Origins": [
+      {
+       "DomainName": {
+        "Fn::GetAtt": [
+         "WebBucket12880F5B",
+         "RegionalDomainName"
+        ]
+       },
+       "Id": "TravelBookDevWebDistributionOrigin1DF976B56",
+       "OriginAccessControlId": {
+        "Fn::GetAtt": [
+         "WebDistributionOrigin1S3OriginAccessControl83AD2F73",
+         "Id"
+        ]
+       },
+       "S3OriginConfig": {
+        "OriginAccessIdentity": ""
+       }
+      },
+      {
+       "CustomOriginConfig": {
+        "OriginProtocolPolicy": "https-only",
+        "OriginSSLProtocols": [
+         "TLSv1.2"
+        ]
+       },
+       "DomainName": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Ref": "ApiF70053CD"
+          },
+          ".execute-api.us-west-2.amazonaws.com"
+         ]
+        ]
+       },
+       "Id": "TravelBookDevWebDistributionOrigin2916B80B9"
+      }
+     ],
+     "PriceClass": "PriceClass_100"
+    },
+    "Tags": [
+     {
+      "Key": "project",
+      "Value": "travelbook"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/WebDistribution/Resource"
+   }
+  },
+  "WorkerErrorsDD2E3D24": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmDescription": "WorkerFunction errors > 3 in 5 minutes",
+    "AlarmName": "travelbook-worker-errors",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "Dimensions": [
+     {
+      "Name": "FunctionName",
+      "Value": {
+       "Ref": "WorkerFunctionACE6A4B0"
+      }
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "Errors",
+    "Namespace": "AWS/Lambda",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Tags": [
+     {
+      "Key": "project",
+      "Value": "travelbook"
+     }
+    ],
+    "Threshold": 3,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/WorkerErrors/Resource"
+   }
+  },
+  "DlqDepth04F13822": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmDescription": "Any visible message in the feed-jobs DLQ needs review",
+    "AlarmName": "travelbook-feed-jobs-dlq-depth",
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "QueueName",
+      "Value": {
+       "Fn::GetAtt": [
+        "FeedJobsDlqBA0B023E",
+        "QueueName"
+       ]
+      }
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "ApproximateNumberOfMessagesVisible",
+    "Namespace": "AWS/SQS",
+    "Period": 300,
+    "Statistic": "Maximum",
+    "Tags": [
+     {
+      "Key": "project",
+      "Value": "travelbook"
+     }
+    ],
+    "Threshold": 1,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/DlqDepth/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/3WSW6/TMAzHP8t5z8LUISQee8pVAs7Y4HlKU6/zliYldjaNKN8dJd1NCJ78+/sSJ3YqWb15K+dP6kQz3R1mBlsZ16z0QagTbWJ3tmpwXSvjD9UaEM3WFkiCfpGM3wOE4iyQBKpBxpWbEotdOoP6nOVESRjXk4xfXP/RuzDmyJWTMGpoO7WxroM9yW/FfAhWMzoraLFRRMAk62wELWR8DvoA/KwIxIT5vAtN5n6BR31tJWOztbcO749gee2C1/BVjSPaPtf927sEPyAROpuEdr1FdjL+JPBL50xOuPEVGoNg+TE0eZJQI/aK4aTOx0rGT8xjPWJOzCbLlQsMhT5bht6rct1ma/+S97w68M55/A2+nHNXObhm1ZcVFUiCaMhb92j7pfJqAJ7KbiIJ0jvoggEvc9lFCG1c6LbeWZbxNsXHib5DYo9tKGK9ePHYo621BqLGWfbTqP7jfixOU6+TYr2TsTbKD+VhGVISK6CyIFG+Rn7WZU0vgcfASeQvJff06li9ltVczp/2hDjzwTIOIFeT/QMTl4G1DgMAAA=="
+   },
+   "Metadata": {
+    "aws:cdk:path": "TravelBookDev/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "ApiUrl": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "ApiF70053CD"
+      },
+      ".execute-api.us-west-2.",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
+  "DistributionId": {
+   "Value": {
+    "Ref": "WebDistribution59C46482"
+   }
+  },
+  "DistributionDomainName": {
+   "Value": {
+    "Fn::GetAtt": [
+     "WebDistribution59C46482",
+     "DomainName"
+    ]
+   }
+  },
+  "WebBucketName": {
+   "Value": {
+    "Ref": "WebBucket12880F5B"
+   }
+  },
+  "UserPoolId": {
+   "Value": {
+    "Ref": "Users0A0EEA89"
+   }
+  },
+  "UserPoolClientId": {
+   "Value": {
+    "Ref": "UsersWebClient8EE36D42"
+   }
+  },
+  "TableName": {
+   "Value": {
+    "Ref": "TableCD117FA1"
+   }
+  },
+  "QueueUrl": {
+   "Value": {
+    "Ref": "FeedJobs79B742F3"
+   }
+  },
+  "DeployRoleArn": {
+   "Value": {
+    "Fn::ImportValue": "travelbook-bootstrap:ExportsOutputFnGetAttDeployRole885297C3ArnF4D2225A"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
