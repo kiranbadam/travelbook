@@ -1,0 +1,238 @@
+{
+  "/TravelBookBootstrap": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:10:19)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    },
+    {
+      "type": "aws:cdk:stack-tags",
+      "data": [
+        {
+          "key": "project",
+          "value": "travelbook"
+        }
+      ]
+    }
+  ],
+  "/TravelBookBootstrap/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/TravelBookBootstrap/ArtifactBucketName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ArtifactBucketName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BootstrapStack (/home/hatch/workspace/travelbook/infra/lib/bootstrap-stack.ts:208:5)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:10:19)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookBootstrap/DeployRoleArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeployRoleArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BootstrapStack (/home/hatch/workspace/travelbook/infra/lib/bootstrap-stack.ts:209:5)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:10:19)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookBootstrap/CfnExecRoleArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CfnExecRoleArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BootstrapStack (/home/hatch/workspace/travelbook/infra/lib/bootstrap-stack.ts:210:5)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:10:19)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookBootstrap/OidcProviderArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OidcProviderArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BootstrapStack (/home/hatch/workspace/travelbook/infra/lib/bootstrap-stack.ts:211:5)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:10:19)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookBootstrap/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/TravelBookBootstrap/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/TravelBookBootstrap/Artifacts/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Artifacts82DD59A1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Bucket2 in aws-cdk-lib...",
+        "new BootstrapStack (/home/hatch/workspace/travelbook/infra/lib/bootstrap-stack.ts:132:23)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:10:19)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookBootstrap/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new OpenIdConnectProvider2 in aws-cdk-lib...",
+        "new BootstrapStack (/home/hatch/workspace/travelbook/infra/lib/bootstrap-stack.ts:148:26)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:10:19)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookBootstrap/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new OpenIdConnectProvider2 in aws-cdk-lib...",
+        "new BootstrapStack (/home/hatch/workspace/travelbook/infra/lib/bootstrap-stack.ts:148:26)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:10:19)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookBootstrap/DeployRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeployRole885297C3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Role2 in aws-cdk-lib...",
+        "new BootstrapStack (/home/hatch/workspace/travelbook/infra/lib/bootstrap-stack.ts:157:23)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:10:19)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookBootstrap/CfnExecRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CfnExecRole456C9651"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Role2 in aws-cdk-lib...",
+        "new BootstrapStack (/home/hatch/workspace/travelbook/infra/lib/bootstrap-stack.ts:177:24)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:10:19)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookBootstrap/CDKMetadata/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CDKMetadata"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/TravelBookBootstrap/Exports/Output{\"Fn::GetAtt\":[\"DeployRole885297C3\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttDeployRole885297C3ArnF4D2225A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/TravelBookBootstrap/Artifacts/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ArtifactsPolicy6E9058CC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Bucket2 in aws-cdk-lib...",
+        "new BootstrapStack (/home/hatch/workspace/travelbook/infra/lib/bootstrap-stack.ts:132:23)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:10:19)"
+      ]
+    }
+  ],
+  "/TravelBookBootstrap/GitHubOidc/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GitHubOidcA2A496A3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new OpenIdConnectProvider2 in aws-cdk-lib...",
+        "new BootstrapStack (/home/hatch/workspace/travelbook/infra/lib/bootstrap-stack.ts:148:26)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:10:19)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ]
+}
