@@ -155,7 +155,9 @@ export class TravelBookStack extends cdk.Stack {
       architecture: lambda.Architecture.ARM_64,
       memorySize: 512,
       timeout: cdk.Duration.seconds(30),
-      reservedConcurrentExecutions: 5,
+      // Reserved concurrency removed: the fresh AWS account's Lambda
+      // concurrent-execution limit is 10, so any reservation would push
+      // unreserved capacity below the required minimum.
       role: apiRole,
       logGroup: apiLogGroup,
       environment: {
@@ -172,7 +174,7 @@ export class TravelBookStack extends cdk.Stack {
       architecture: lambda.Architecture.ARM_64,
       memorySize: 1024,
       timeout: cdk.Duration.seconds(180),
-      reservedConcurrentExecutions: 2,
+      // Reserved concurrency removed (see ApiFunction note above).
       role: workerRole,
       logGroup: workerLogGroup,
       environment: {
