@@ -1,0 +1,315 @@
+/* Astryx stylesheets — order matters: reset → component base → theme tokens. */
+@import '@astryxdesign/core/reset.css';
+@import '@astryxdesign/core/astryx.css';
+@import '@astryxdesign/theme-neutral/theme.css';
+
+/* ---------------------------------------------------------------------------
+ * TravelBook app styles. All colors/radii come from Astryx theme tokens so the
+ * dark-mode toggle (data-theme on <html>) re-themes these automatically.
+ * ------------------------------------------------------------------------- */
+
+.tb-page {
+  max-width: 1060px;
+  margin: 0 auto;
+  padding: 24px 20px 64px;
+}
+
+.tb-section {
+  margin-bottom: 20px;
+}
+
+.tb-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 720px) {
+  .tb-grid-2 { grid-template-columns: 1fr; }
+}
+
+.tb-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+@media (max-width: 720px) {
+  .tb-grid-3 { grid-template-columns: 1fr; }
+}
+
+.tb-muted {
+  color: var(--color-text-secondary);
+}
+
+.tb-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tb-spread {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* --- Score breakdown bars (deterministic, always rendered) --- */
+
+.tb-scorebar {
+  display: grid;
+  grid-template-columns: 110px 1fr 44px;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0;
+  font-size: 13px;
+}
+.tb-scorebar .tb-scorebar-label {
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+.tb-scorebar .tb-scorebar-track {
+  height: 8px;
+  border-radius: var(--radius-element);
+  background: var(--color-background-muted);
+  overflow: hidden;
+}
+.tb-scorebar .tb-scorebar-fill {
+  height: 100%;
+  border-radius: var(--radius-element);
+  background: var(--color-accent);
+  transition: width 0.4s ease;
+}
+.tb-scorebar .tb-scorebar-value {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-primary);
+}
+
+.tb-score-total {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.tb-score-total .tb-score-number {
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--color-text-accent);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Source chips: every fact carries provider + checked time --- */
+
+.tb-source-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  line-height: 1.4;
+  padding: 3px 9px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-background-muted);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+.tb-source-chip .tb-source-provider {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+.tb-source-chip.tb-stale {
+  border-style: dashed;
+  color: var(--color-text-orange);
+}
+.tb-source-chip a {
+  color: var(--color-text-accent);
+  text-decoration: none;
+}
+
+/* --- Fare display: LIVE vs ILLUSTRATIVE is never ambiguous --- */
+
+.tb-fare {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.tb-fare .tb-fare-amount {
+  font-size: 26px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Feed card sections --- */
+
+.tb-card-section {
+  border-top: 1px solid var(--color-border);
+  padding-top: 12px;
+  margin-top: 12px;
+}
+.tb-card-section h4 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-secondary);
+}
+.tb-reasons {
+  margin: 0;
+  padding-left: 18px;
+}
+.tb-reasons li {
+  margin-bottom: 4px;
+}
+.tb-narration {
+  font-style: italic;
+  color: var(--color-text-secondary);
+  border-left: 3px solid var(--color-border);
+  padding-left: 10px;
+  margin: 10px 0 0;
+}
+
+/* --- Risk treatments (severity → UI, per architecture plan) --- */
+
+.tb-risk {
+  border: 1px solid var(--color-border);
+  border-left-width: 4px;
+  border-radius: var(--radius-element);
+  padding: 10px 12px;
+  margin: 8px 0;
+  background: var(--color-background-card);
+}
+.tb-risk-low { border-left-color: var(--color-icon-blue); }
+.tb-risk-moderate { border-left-color: var(--color-icon-orange); }
+.tb-risk-high { border-left-color: var(--color-icon-red); background: var(--color-background-red); }
+.tb-risk-critical {
+  border-left-color: var(--color-icon-red);
+  border-color: var(--color-icon-red);
+  background: var(--color-background-red);
+}
+.tb-risk-unknown { border-left-color: var(--color-icon-purple); border-style: dashed; }
+.tb-risk .tb-risk-title {
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.tb-risk .tb-risk-detail {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+/* --- Interest chips --- */
+
+.tb-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.tb-chip {
+  cursor: pointer;
+  border: 1px solid var(--color-border);
+  background: var(--color-background-card);
+  color: var(--color-text-primary);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 13px;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.tb-chip:hover { border-color: var(--color-accent); }
+.tb-chip[aria-pressed="true"] {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* --- Trip vote rows --- */
+
+.tb-vote-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-element);
+  background: var(--color-background-card);
+  margin-bottom: 8px;
+}
+.tb-vote-rank {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text-accent);
+  min-width: 28px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.tb-vote-name {
+  flex: 1;
+  font-weight: 600;
+}
+
+/* --- Reaction buttons --- */
+
+.tb-reactions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.tb-reaction {
+  cursor: pointer;
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-element);
+  padding: 6px 12px;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.tb-reaction:hover { border-color: var(--color-accent); color: var(--color-text-primary); }
+.tb-reaction[aria-pressed="true"] {
+  border-color: var(--color-accent);
+  color: var(--color-text-accent);
+  background: var(--color-accent-muted);
+  font-weight: 600;
+}
+
+/* --- Misc --- */
+
+.tb-note {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  background: var(--color-background-muted);
+  border-radius: var(--radius-element);
+  padding: 10px 12px;
+  margin: 12px 0;
+}
+
+.tb-kv {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 16px;
+  font-size: 14px;
+}
+.tb-kv dt { color: var(--color-text-secondary); }
+.tb-kv dd { margin: 0; font-weight: 500; }
+
+.tb-nav-active {
+  color: var(--color-text-accent) !important;
+  font-weight: 600;
+}
+
+.tb-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 48px 20px;
+  gap: 12px;
+}
