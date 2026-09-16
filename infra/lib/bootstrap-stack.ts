@@ -104,9 +104,12 @@ export function deploymentPolicyStatements(scope: Construct): iam.PolicyStatemen
         `arn:aws:s3:::cdk-*-assets-${account}-${r}/*`,
       ],
     }),
+    // CloudFormation resolves template parameters of type
+    // AWS::SSM::Parameter::Value<String> with ssm:GetParameters (plural),
+    // so both actions are needed for the CFN execution role.
     new iam.PolicyStatement({
       sid: 'CdkBootstrapLookup',
-      actions: ['ssm:GetParameter'],
+      actions: ['ssm:GetParameter', 'ssm:GetParameters'],
       resources: [`arn:aws:ssm:${r}:${account}:parameter/cdk-bootstrap/*`],
     }),
     new iam.PolicyStatement({
