@@ -1,0 +1,27 @@
+{
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.870.0",
+    "@aws-sdk/client-sqs": "^3.870.0",
+    "@aws-sdk/client-ssm": "^3.870.0",
+    "@aws-sdk/lib-dynamodb": "^3.870.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.870.0"
+  },
+  "description": "TravelBook serverless backend: API Lambda + SQS feed worker (private alpha).",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.0",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0",
+    "vitest": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "name": "travelbook-backend",
+  "private": true,
+  "scripts": {
+    "build": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "type": "module",
+  "version": "0.1.0"
+}
