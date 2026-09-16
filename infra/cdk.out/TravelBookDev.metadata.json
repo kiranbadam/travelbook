@@ -1,0 +1,1253 @@
+{
+  "/TravelBookDev": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/core/lib/annotations.js:1:3506)",
+        "Annotations.addWarningV2 (/home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/core/lib/annotations.js:1:2194)",
+        "resolveValue (/home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/core/lib/private/refs.js:1:6980)",
+        "resolveReferences (/home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/core/lib/private/refs.js:1:4848)",
+        "prepareApp (/home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/core/lib/private/prepare-app.js:1:1240)",
+        "synthesize (/home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/core/lib/private/synthesis.js:1:2625)",
+        "App.synth (/home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/core/lib/stage.js:1:5061)",
+        "App.synth (/home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/core/lib/app.js:1:5008)",
+        "process.<anonymous> (/home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/core/lib/app.js:1:3918)",
+        "process.wrapper (node:events:639:12)",
+        "process.emit (node:events:514:28)",
+        "process.emit (node:domain:489:12)",
+        "process.emit.sharedData.processEmitHook.installedValue [as emit] (/home/hatch/workspace/travelbook/infra/node_modules/@cspotcode/source-map-support/source-map-support.js:745:40)"
+      ]
+    },
+    {
+      "type": "aws:cdk:stack-tags",
+      "data": [
+        {
+          "key": "project",
+          "value": "travelbook"
+        }
+      ]
+    }
+  ],
+  "/TravelBookDev/Table": [
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "TableCD117FA1"
+      }
+    }
+  ],
+  "/TravelBookDev/AdvisoryRefresh": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AdvisoryRefresh"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:305:5)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/ApiUrl": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiUrl"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:401:5)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/DistributionId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DistributionId"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:402:5)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/DistributionDomainName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DistributionDomainName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:403:5)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/WebBucketName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebBucketName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:404:5)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/UserPoolId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "UserPoolId"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:405:5)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/UserPoolClientId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "UserPoolClientId"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:406:5)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/TableName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TableName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:407:5)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/QueueUrl": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "QueueUrl"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:408:5)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/DeployRoleArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeployRoleArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:409:5)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/TravelBookDev/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/TravelBookDev/Table/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TableCD117FA1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Table2 in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:49:19)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/FeedJobsDlq/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FeedJobsDlqBA0B023E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Queue2 in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:83:17)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/FeedJobs/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FeedJobs79B742F3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Queue2 in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:87:19)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/ApiRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiRole1873F438"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Role2 in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:99:21)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/WorkerRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WorkerRole8DD27D41"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Role2 in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:104:24)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/ApiLogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiLogGroup1DEDFC07"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new LogGroup2 in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:139:25)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/WorkerLogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WorkerLogGroup31FDBE4A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new LogGroup2 in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:144:28)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/ApiFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiFunctionCE271BD4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new NodejsFunction in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:150:19)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/WorkerFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WorkerFunctionACE6A4B0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new NodejsFunction in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:167:22)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/Users/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Users0A0EEA89"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new UserPool2 in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:191:22)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiF70053CD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new HttpApi2 in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:224:17)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/DefaultStage/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DefaultStageEE28A986"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new HttpStage2 in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:261:26)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/LlmProvider/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LlmProvider30A9C469"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new StringParameter2 in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:283:7)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/DuffelMode/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DuffelModeFBFAE08C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new StringParameter2 in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:283:7)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/SchedulerRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SchedulerRole59E73443"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Role2 in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:294:27)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/WebBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebBucket12880F5B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Bucket2 in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:323:23)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/StripApiPrefix/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StripApiPrefix88D2DA73"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Function2 in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:330:28)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/WebDistribution/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebDistribution59C46482"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Distribution2 in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:342:26)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/WorkerErrors/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WorkerErrorsDD2E3D24"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Alarm2 in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:375:5)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/DlqDepth/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DlqDepth04F13822"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Alarm2 in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:384:5)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/CDKMetadata/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CDKMetadata"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/TravelBookDev/ApiRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiRoleDefaultPolicyCFEBAD31"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:111:13)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/TravelBookDev/WorkerRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WorkerRoleDefaultPolicy1750E153"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:117:16)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/TravelBookDev/WorkerFunction/SqsEventSource:TravelBookDevFeedJobsCAC5D00B/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WorkerFunctionSqsEventSourceTravelBookDevFeedJobsCAC5D00B37FDF1BE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...NodejsFunction.addEventSource in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:184:14)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/Users/WebClient/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "UsersWebClient8EE36D42"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...WrappedClass.addClient in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:200:37)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/PUT--v1--preferences/ApiIntegration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPUTv1preferencesApiIntegrationPermission4E4844D8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)"
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/PUT--v1--preferences/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPUTv1preferences28ECA61C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/JwtAuthorizer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiJwtAuthorizer84FEA7B0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)"
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/POST--v1--feed-jobs/ApiIntegration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTv1feedjobsApiIntegrationPermission86C15423"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)"
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/POST--v1--feed-jobs/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTv1feedjobs09679579"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/GET--v1--feed-jobs--{id}/ApiIntegration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiGETv1feedjobsidApiIntegrationPermission3B858E79"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)"
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/GET--v1--feed-jobs--{id}/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiGETv1feedjobsid39D3F24B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/GET--v1--feed/ApiIntegration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiGETv1feedApiIntegrationPermissionD9472A31"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)"
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/GET--v1--feed/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiGETv1feed99FF046D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/GET--v1--destinations--{id}/ApiIntegration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiGETv1destinationsidApiIntegrationPermission835EAFC7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)"
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/GET--v1--destinations--{id}/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiGETv1destinationsid6F1DB5B0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/POST--v1--reactions/ApiIntegration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTv1reactionsApiIntegrationPermission107B1EF7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)"
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/POST--v1--reactions/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTv1reactions3111D0F8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/POST--v1--trips/ApiIntegration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTv1tripsApiIntegrationPermission6CE27F3E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)"
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/POST--v1--trips/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTv1trips39009DEF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/GET--v1--trips/ApiIntegration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiGETv1tripsApiIntegrationPermission5D3010A6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)"
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/GET--v1--trips/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiGETv1tripsF8C4C8C5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/GET--v1--trips--{id}/ApiIntegration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiGETv1tripsidApiIntegrationPermission0AC70F26"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)"
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/GET--v1--trips--{id}/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiGETv1tripsidAF31CB8F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/PUT--v1--trips--{id}--votes--me/ApiIntegration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPUTv1tripsidvotesmeApiIntegrationPermission149E9119"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)"
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/PUT--v1--trips--{id}--votes--me/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPUTv1tripsidvotesme80A2EC7F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/POST--v1--trips--{id}--members/ApiIntegration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTv1tripsidmembersApiIntegrationPermission48E73868"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)"
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/POST--v1--trips--{id}--members/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTv1tripsidmembers52934970"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/GET--v1--friends/ApiIntegration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiGETv1friendsApiIntegrationPermissionE99D6C37"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)"
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/GET--v1--friends/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiGETv1friends6C47623C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/POST--v1--friends--requests/ApiIntegration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTv1friendsrequestsApiIntegrationPermission44738A24"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)"
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/POST--v1--friends--requests/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTv1friendsrequestsFFD37970"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/GET--v1--friends--requests--incoming/ApiIntegration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiGETv1friendsrequestsincomingApiIntegrationPermission9E9B14D4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)"
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/GET--v1--friends--requests--incoming/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiGETv1friendsrequestsincoming15F6E1DE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/POST--v1--friends--accept/ApiIntegration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTv1friendsacceptApiIntegrationPermissionE2CDAA16"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)"
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/POST--v1--friends--accept/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTv1friendsaccept682737E3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/GET--v1--friends--{id}--feed/ApiIntegration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiGETv1friendsidfeedApiIntegrationPermission3B5A887F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)"
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/GET--v1--friends--{id}--feed/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiGETv1friendsidfeedCFB4027F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/POST--v1--feed--share/ApiIntegration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTv1feedshareApiIntegrationPermission267DB9F2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)"
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/POST--v1--feed--share/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTv1feedshare1F44AC7F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/GET--v1--trips--{id}--recommendations/ApiIntegration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiGETv1tripsidrecommendationsApiIntegrationPermission4A0A0827"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)"
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/GET--v1--trips--{id}--recommendations/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiGETv1tripsidrecommendations1DA5FEF5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/GET--health/ApiIntegration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiGEThealthApiIntegrationPermission8F72FA5E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:254:9)"
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/GET--health/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiGEThealthA417CA46"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:254:9)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/TravelBookDev/WebBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebBucketPolicy95D08FAA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Bucket2 in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:323:23)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)"
+      ]
+    }
+  ],
+  "/TravelBookDev/Api/PUT--v1--preferences/ApiIntegration/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPUTv1preferencesApiIntegrationC4964B84"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../home/hatch/workspace/travelbook/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...WrappedClass.<anonymous> in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:252:11)"
+      ]
+    }
+  ],
+  "/TravelBookDev/WebDistribution/Origin1/S3OriginAccessControl/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebDistributionOrigin1S3OriginAccessControl83AD2F73"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Distribution2 in aws-cdk-lib...",
+        "new TravelBookStack (/home/hatch/workspace/travelbook/infra/lib/travelbook-stack.ts:342:26)",
+        "<anonymous> (/home/hatch/workspace/travelbook/infra/bin/travelbook.ts:17:1)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
