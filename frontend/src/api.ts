@@ -13,6 +13,7 @@ import type {
   PostReactionRequest,
   PreferencesInput,
   PutPreferencesResponse,
+  RiskItem,
   Trip,
   TripDetail,
 } from './types';
@@ -31,6 +32,90 @@ import type {
  */
 
 const BASE = '/api/v1';
+
+/* ------------------------------------------------------------------ */
+/* Feed-card wire adapter                                              */
+/*                                                                     */
+/* The worker emits a flatter card shape than the renderers expect      */
+/* (scoreBreakdown instead of components, unknowns instead of          */
+/* uncertainties, evidenceRefs instead of sources). Normalize here so   */
+/* screens never touch undefined — a missing array used to crash the   */
+/* whole feed (TypeError on `.length`).                                 */
+/* ------------------------------------------------------------------ */
+
+/** Backend wire shape for a feed card (see backend/src/worker/index.ts). */
+interface WireFeedCard {
+  destinationId?: unknown;
+  name?: unknown;
+  country?: unknown;
+  region?: unknown;
+  score?: unknown;
+  scoreBreakdown?: Record<string, unknown>;
+  riskPenalty?: unknown;
+  reasons?: unknown;
+  unknowns?: unknown;
+  cautions?: unknown;
+  risks?: unknown;
+  evidenceRefs?: unknown;
+  narration?: unknown;
+  reaction?: unknown;
+}
+
+const WIRE_PROVIDER_LABELS: Record<string, string> = {
+  'open-meteo': 'Open-Meteo',
+  duffel: 'Duffel',
+  ticketmaster: 'Ticketmaster',
+  'state-dept': 'U.S. State Dept',
+  'visa-matrix': 'Entry-rules matrix',
+};
+
+function wireNum(v: unknown): number {
+  return typeof v === 'number' && Number.isFinite(v) ? v : 0;
+}
+
+function wireStrs(v: unknown): string[] {
+  return Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : [];
+}
+
+function wireStr(v: unknown, fallback = ''): string {
+  return typeof v === 'string' ? v : fallback;
+}
+
+function adaptFeedCard(wire: WireFeedCard, checkedAt: string): FeedCard {
+  const sb = wire.scoreBreakdown ?? {};
+  const refs = wireStrs(wire.evidenceRefs);
+  return {
+    destinationId: wireStr(wire.destinationId),
+    name: wireStr(wire.name, 'Unknown destination'),
+    country: wireStr(wire.country),
+    region: typeof wire.region === 'string' ? wire.region : undefined,
+    score: wireNum(wire.score),
+    components: {
+      airfare: wireNum(sb['airfare']),
+      weather: wireNum(sb['weather']),
+      interest: wireNum(sb['interest']),
+      travelTime: wireNum(sb['travelTime']),
+      freshness: wireNum(sb['freshness']),
+      novelty: wireNum(sb['novelty']),
+    },
+    riskPenalty: wireNum(sb['riskPenalty'] ?? wire.riskPenalty),
+    reasons: wireStrs(wire.reasons),
+    narration: typeof wire.narration === 'string' ? wire.narration : undefined,
+    uncertainties: [...wireStrs(wire.cautions), ...wireStrs(wire.unknowns)],
+    risks: Array.isArray(wire.risks) ? (wire.risks as RiskItem[]) : [],
+    sources: refs.map((ref) => {
+      const parts = ref.split(':');
+      const label = (parts[0] ?? 'evidence').replace(/[-_]/g, ' ');
+      const providerRaw = parts.length > 1 ? parts.slice(1).join(':') : ref;
+      return {
+        provider: WIRE_PROVIDER_LABELS[providerRaw] ?? providerRaw.replace(/[-_]/g, ' '),
+        label,
+        checkedAt,
+      };
+    }),
+    reaction: wire.reaction === 'like' || wire.reaction === 'save' ? wire.reaction : undefined,
+  };
+}
 
 export class ApiRequestError extends Error {
   status: number;
@@ -165,7 +250,7 @@ export class ApiClient {
       snapshotId: res.snapshot.snapshotId,
       createdAt: res.snapshot.createdAt,
       state: res.snapshot.state,
-      cards: res.cards,
+      cards: res.cards.map((c) => adaptFeedCard(c as unknown as WireFeedCard, res.snapshot!.createdAt)),
       partialFailures: res.snapshot.partialFailures,
       visibility: res.snapshot.visibility,
     };
@@ -264,8 +349,17 @@ export class ApiClient {
   }
 
   /** [assumed] A friend's explicitly shared feed (private until shared). */
-  getFriendFeed(friendSub: string): Promise<FriendFeed> {
-    return this.request('GET', `/friends/${encodeURIComponent(friendSub)}/feed`);
+  async getFriendFeed(friendSub: string): Promise<FriendFeed> {
+    const res = await this.request<{
+      friend: Friend;
+      sharedAt: string;
+      cards: WireFeedCard[];
+    }>('GET', `/friends/${encodeURIComponent(friendSub)}/feed`);
+    return {
+      friend: res.friend,
+      sharedAt: res.sharedAt,
+      cards: res.cards.map((c) => adaptFeedCard(c, res.sharedAt)),
+    };
   }
 
   /** [assumed] Share (or unshare) my latest feed snapshot with friends. */
