@@ -196,6 +196,7 @@ export class BootstrapStack extends cdk.Stack {
                 'iam:UpdateRole',
                 'iam:UpdateAssumeRolePolicy',
                 'iam:PutRolePolicy',
+                'iam:GetRolePolicy',
                 'iam:DeleteRolePolicy',
                 'iam:AttachRolePolicy',
                 'iam:DetachRolePolicy',
