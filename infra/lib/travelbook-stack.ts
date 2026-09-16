@@ -266,13 +266,17 @@ export class TravelBookStack extends cdk.Stack {
     });
 
     // ------------------------------------------------------------------
-    // SSM parameters. Secrets are SecureString with the AWS-owned key;
-    // values are placeholders until the coordinator sets real ones.
+    // SSM parameters. NOTE: the two secret params (ticketmaster/api-key,
+    // llm/api-key) are intentionally NOT in this stack: CloudFormation's
+    // EarlyValidation hook in us-west-2 currently rejects
+    // AWS::SSM::Parameter with Type=SecureString (verified 2026-09-16 —
+    // even a minimal single-resource test stack fails validation). They
+    // are created out-of-band as SecureString via the CLI after deploy
+    // (see README post-deploy steps); the backend treats missing/UNSET
+    // as mock mode. Re-add them here if the hook is fixed.
     // ------------------------------------------------------------------
     const ssmParams: Array<{ id: string; name: string; value: string; secure: boolean }> = [
-      { id: 'TicketmasterKey', name: `/${PROJECT}/dev/ticketmaster/api-key`, value: 'UNSET', secure: true },
       { id: 'LlmProvider', name: `/${PROJECT}/dev/llm/provider`, value: 'template', secure: false },
-      { id: 'LlmApiKey', name: `/${PROJECT}/dev/llm/api-key`, value: 'UNSET', secure: true },
       { id: 'DuffelMode', name: `/${PROJECT}/dev/duffel/mode`, value: 'mock', secure: false },
     ];
     for (const p of ssmParams) {
