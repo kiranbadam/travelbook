@@ -33,10 +33,32 @@ export function deploymentPolicyStatements(scope: Construct): iam.PolicyStatemen
       actions: ['iam:PassRole'],
       resources: [`arn:aws:iam::${account}:role/${PROJECT}-*`],
     }),
+    // Managed policies CFN creates for the Lambda execution roles
+    // (AWS::IAM::Policy resources). Without these, attaching the
+    // DefaultPolicy documents fails.
+    new iam.PolicyStatement({
+      sid: 'ManageTravelBookManagedPolicies',
+      actions: [
+        'iam:CreatePolicy',
+        'iam:DeletePolicy',
+        'iam:GetPolicy',
+        'iam:GetPolicyVersion',
+        'iam:ListPolicyVersions',
+        'iam:CreatePolicyVersion',
+        'iam:DeletePolicyVersion',
+        'iam:TagPolicy',
+        'iam:UntagPolicy',
+      ],
+      resources: [`arn:aws:iam::${account}:policy/${PROJECT}-*`],
+    }),
     new iam.PolicyStatement({
       sid: 'Lambda',
       actions: ['lambda:*'],
-      resources: [`arn:aws:lambda:${r}:${account}:function:${PROJECT}-*`],
+      resources: [
+        `arn:aws:lambda:${r}:${account}:function:${PROJECT}-*`,
+        // CreateEventSourceMapping addresses the mapping ARN, not the function.
+        `arn:aws:lambda:${r}:${account}:event-source-mapping:*`,
+      ],
     }),
     new iam.PolicyStatement({
       sid: 'ApiGateway',
