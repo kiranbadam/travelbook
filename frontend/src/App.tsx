@@ -14,16 +14,29 @@ import { TripDetailScreen, TripsScreen } from './screens/Trips';
 const MODES = ['light', 'dark', 'system'] as const;
 const STORAGE_KEY = 'travelbook-theme-mode';
 
+function readMode(): ThemeMode {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if ((MODES as readonly string[]).includes(saved ?? '')) return saved as ThemeMode;
+  } catch {
+    // Storage unavailable (private mode, blocked cookies) — fall through.
+  }
+  return 'system';
+}
+
 function initialMode(): ThemeMode {
-  const saved = localStorage.getItem(STORAGE_KEY);
-  return (MODES as readonly string[]).includes(saved ?? '') ? (saved as ThemeMode) : 'system';
+  return readMode();
 }
 
 export default function App() {
   const [mode, setMode] = useState<ThemeMode>(initialMode);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, mode);
+    try {
+      localStorage.setItem(STORAGE_KEY, mode);
+    } catch {
+      // Storage unavailable — theme just won't persist.
+    }
   }, [mode]);
 
   return (
