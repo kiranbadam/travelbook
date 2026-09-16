@@ -1,0 +1,275 @@
+import type {
+  ApiError,
+  CreateFeedJobResponse,
+  FeedCard,
+  FeedJobStatus,
+  FeedSnapshot,
+  Friend,
+  FriendFeed,
+  FriendRequest,
+  GetFeedJobResponse,
+  GroupRecommendations,
+  NormalizedPreferences,
+  PostReactionRequest,
+  PreferencesInput,
+  PutPreferencesResponse,
+  Trip,
+  TripDetail,
+} from './types';
+
+/**
+ * Typed client for the TravelBook API. All paths are relative (/api/v1/...)
+ * so CloudFront proxies them same-origin to the HTTP API — no CORS needed.
+ *
+ * The Cognito ID token is attached as `Authorization: Bearer <idToken>` on
+ * every call; the API's JWT authorizer derives identity from the token
+ * subject (clients never send owner IDs).
+ *
+ * Endpoints marked [assumed] are client-side conveniences not named
+ * explicitly in the architecture contract — reconcile names with the
+ * backend engineer at integration.
+ */
+
+const BASE = '/api/v1';
+
+export class ApiRequestError extends Error {
+  status: number;
+  errorClass?: string;
+
+  constructor(status: number, message: string, errorClass?: string) {
+    super(message);
+    this.name = 'ApiRequestError';
+    this.status = status;
+    this.errorClass = errorClass;
+  }
+}
+
+export type TokenProvider = () => string | null;
+
+export class ApiClient {
+  private readonly getToken: TokenProvider;
+
+  constructor(getToken: TokenProvider) {
+    this.getToken = getToken;
+  }
+
+  private async request<T>(
+    method: string,
+    path: string,
+    body?: unknown,
+    extraHeaders?: Record<string, string>,
+  ): Promise<T> {
+    const token = this.getToken();
+    const headers: Record<string, string> = {
+      ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}),
+      ...extraHeaders,
+    };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    const res = await fetch(`${BASE}${path}`, {
+      method,
+      headers,
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+    });
+
+    if (res.status === 204) return undefined as T;
+
+    let payload: unknown = null;
+    try {
+      payload = await res.json();
+    } catch {
+      payload = null;
+    }
+
+    if (!res.ok) {
+      const apiErr = payload as ApiError | null;
+      const message =
+        (apiErr && typeof apiErr.message === 'string' && apiErr.message) ||
+        `Request failed with status ${res.status}.`;
+      throw new ApiRequestError(
+        res.status,
+        res.status === 401 ? 'Your session expired. Please sign in again.' : message,
+        apiErr?.class,
+      );
+    }
+    return payload as T;
+  }
+
+  /* ------------------------------ preferences ----------------------------- */
+
+  putPreferences(input: PreferencesInput): Promise<PutPreferencesResponse> {
+    return this.request<{
+      normalized: NormalizedPreferences;
+      warnings: string[];
+      version: number;
+    }>('PUT', '/preferences', input).then((res) => ({
+      preferences: res.normalized,
+      warnings: res.warnings,
+      version: res.version,
+    }));
+  }
+
+  /* -------------------------------- feed ---------------------------------- */
+
+  /** Creates (or reuses) a feed-generation job. Requires Idempotency-Key. */
+  async createFeedJob(): Promise<CreateFeedJobResponse> {
+    const res = await this.request<{ jobId: string; state: FeedJobStatus }>(
+      'POST',
+      '/feed-jobs',
+      undefined,
+      { 'Idempotency-Key': crypto.randomUUID() },
+    );
+    return { jobId: res.jobId, status: res.state };
+  }
+
+  async getFeedJob(jobId: string): Promise<GetFeedJobResponse> {
+    const res = await this.request<{
+      jobId: string;
+      state: FeedJobStatus;
+      progress: number;
+      snapshotId?: string;
+      error?: ApiError;
+    }>('GET', `/feed-jobs/${encodeURIComponent(jobId)}`);
+    const stage =
+      res.state === 'PENDING'
+        ? 'Queued'
+        : res.state === 'RUNNING'
+          ? res.progress < 60
+            ? 'Gathering evidence'
+            : 'Scoring destinations'
+          : res.state;
+    return {
+      jobId: res.jobId,
+      status: res.state,
+      progress: { completedSteps: res.progress ?? 0, totalSteps: 100, currentStage: stage },
+      snapshotId: res.snapshotId,
+      error: res.error,
+    };
+  }
+
+  async getFeed(snapshotId?: string): Promise<FeedSnapshot | null> {
+    const qs = snapshotId ? `?snapshotId=${encodeURIComponent(snapshotId)}` : '';
+    const res = await this.request<{
+      snapshot: {
+        snapshotId: string;
+        createdAt: string;
+        state: FeedSnapshot['state'];
+        partialFailures?: { provider: string; message: string }[];
+        visibility?: 'private' | 'friends';
+      } | null;
+      cards: FeedCard[];
+      nextCursor: string | null;
+    }>('GET', `/feed${qs}`);
+    if (!res.snapshot) return null;
+    return {
+      snapshotId: res.snapshot.snapshotId,
+      createdAt: res.snapshot.createdAt,
+      state: res.snapshot.state,
+      cards: res.cards,
+      partialFailures: res.snapshot.partialFailures,
+      visibility: res.snapshot.visibility,
+    };
+  }
+
+  getDestination(destinationId: string): Promise<{ destination: FeedCard }> {
+    return this.request('GET', `/destinations/${encodeURIComponent(destinationId)}`);
+  }
+
+  /* -------------------------------- reactions ------------------------------ */
+
+  postReaction(req: PostReactionRequest): Promise<{ ok: true }> {
+    return this.request('POST', '/reactions', req);
+  }
+
+  /* --------------------------------- trips --------------------------------- */
+
+  createTrip(input: { name: string; startDate?: string; endDate?: string }): Promise<{ trip: Trip }> {
+    return this.request('POST', '/trips', input);
+  }
+
+  /** [assumed] List trips the caller belongs to. */
+  listTrips(): Promise<{ trips: Trip[] }> {
+    return this.request('GET', '/trips');
+  }
+
+  /** [assumed] Trip detail incl. members and the caller's ranking. */
+  getTrip(tripId: string): Promise<{ trip: TripDetail }> {
+    return this.request('GET', `/trips/${encodeURIComponent(tripId)}`);
+  }
+
+  /** Create or replace the caller's ranked vote (best-first destinationIds). */
+  voteTrip(tripId: string, ranking: string[]): Promise<{ ok: true }> {
+    return this.request('PUT', `/trips/${encodeURIComponent(tripId)}/votes/me`, { ranking });
+  }
+
+  /** [assumed] Add a member to a trip by their Cognito user sub. */
+  addTripMember(tripId: string, userSub: string): Promise<{ ok: true }> {
+    return this.request('POST', `/trips/${encodeURIComponent(tripId)}/members`, { userSub });
+  }
+
+  async getTripRecommendations(tripId: string): Promise<{ recommendations: GroupRecommendations }> {
+    const res = await this.request<{
+      pareto?: {
+        bestOverall?: { destinationId?: string } | null;
+        bestBudget?: { destinationId?: string } | null;
+        bestWeather?: { destinationId?: string } | null;
+        bestSharedInterest?: { destinationId?: string } | null;
+      };
+      feasible?: {
+        destinationId: string;
+        utilities?: { userId: string; score: number }[];
+      }[];
+      method?: string;
+    }>('GET', `/trips/${encodeURIComponent(tripId)}/recommendations`);
+    const memberScores: Record<string, Record<string, number>> = {};
+    for (const f of res.feasible ?? []) {
+      for (const u of f.utilities ?? []) {
+        (memberScores[u.userId] ??= {})[f.destinationId] = u.score;
+      }
+    }
+    return {
+      recommendations: {
+        bestOverall: res.pareto?.bestOverall?.destinationId,
+        bestBudget: res.pareto?.bestBudget?.destinationId,
+        bestWeather: res.pareto?.bestWeather?.destinationId,
+        bestSharedInterest: res.pareto?.bestSharedInterest?.destinationId,
+        memberScores,
+        note: res.method,
+      },
+    };
+  }
+
+  /* --------------------------------- friends -------------------------------- */
+
+  /**
+   * Send a friend request. The backend resolves identity from the supplied
+   * email; if it expects a user ID instead, pass userId.
+   */
+  requestFriend(input: { email?: string; userId?: string }): Promise<{ request: FriendRequest }> {
+    return this.request('POST', '/friends/requests', input);
+  }
+
+  /** [assumed] Incoming pending requests (accepting is mutual). */
+  listIncomingRequests(): Promise<{ requests: FriendRequest[] }> {
+    return this.request('GET', '/friends/requests/incoming');
+  }
+
+  acceptFriend(requestId: string): Promise<{ ok: true }> {
+    return this.request('POST', '/friends/accept', { requestId });
+  }
+
+  /** [assumed] Accepted friends. */
+  listFriends(): Promise<{ friends: Friend[] }> {
+    return this.request('GET', '/friends');
+  }
+
+  /** [assumed] A friend's explicitly shared feed (private until shared). */
+  getFriendFeed(friendSub: string): Promise<FriendFeed> {
+    return this.request('GET', `/friends/${encodeURIComponent(friendSub)}/feed`);
+  }
+
+  /** [assumed] Share (or unshare) my latest feed snapshot with friends. */
+  shareFeed(visibility: 'private' | 'friends'): Promise<{ ok: boolean; visibility: string }> {
+    return this.request('POST', '/feed/share', { visibility });
+  }
+}
