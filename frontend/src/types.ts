@@ -174,6 +174,12 @@ export interface FeedCard {
   name: string;
   country: string;
   region?: string;
+  /**
+   * Optional hero photo (Pexels). Illustration only — never evidence, never
+   * scored. Null/undefined when no Pexels key is configured or the lookup
+   * failed; the card must render identically either way.
+   */
+  heroImage?: HeroImage | null;
   /** 0–100 deterministic score. */
   score: number;
   components: ScoreComponents;
@@ -199,6 +205,17 @@ export interface FeedCard {
 export interface PartialFailure {
   provider: string;
   message: string;
+}
+
+/**
+ * Hero image attribution for a feed card (mirrors the backend wire shape
+ * backend/src/shared/types.ts — keep in sync via adaptFeedCard).
+ */
+export interface HeroImage {
+  url: string;
+  photographer: string;
+  photographerUrl: string;
+  pageUrl: string;
 }
 
 export type FeedState = 'READY' | 'PARTIAL';
