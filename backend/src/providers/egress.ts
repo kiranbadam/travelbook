@@ -10,6 +10,8 @@ const ALLOWLIST = [
   "api.ticketmaster.com",
   "api.duffel.com",
   "travel.state.gov",
+  "api.pexels.com",
+  "images.pexels.com",
 ] as const;
 
 export function assertEgressAllowed(url: string): void {
