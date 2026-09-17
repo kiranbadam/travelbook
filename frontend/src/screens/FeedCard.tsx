@@ -59,6 +59,33 @@ export function FeedCard({
 
   return (
     <Card>
+      {card.heroImage && (
+        <figure style={{ margin: '0 0 12px' }}>
+          <img
+            src={card.heroImage.url}
+            alt={`${card.name} — travel photo`}
+            loading="lazy"
+            style={{
+              width: '100%',
+              display: 'block',
+              borderRadius: 12,
+              aspectRatio: '16 / 9',
+              objectFit: 'cover',
+              background: '#0f172a',
+            }}
+          />
+          <figcaption className="tb-muted" style={{ fontSize: 12, marginTop: 4 }}>
+            Photo by{' '}
+            <a href={card.heroImage.photographerUrl} target="_blank" rel="noreferrer">
+              {card.heroImage.photographer}
+            </a>{' '}
+            on{' '}
+            <a href={card.heroImage.pageUrl} target="_blank" rel="noreferrer">
+              Pexels
+            </a>
+          </figcaption>
+        </figure>
+      )}
       <div className="tb-spread">
         <div>
           <Heading level={2}>
