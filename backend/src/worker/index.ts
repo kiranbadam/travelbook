@@ -62,6 +62,7 @@ import { DuffelProvider } from "../providers/duffel.js";
 import { AdvisoryProvider } from "../providers/advisories.js";
 import { VisaProvider } from "../providers/visa.js";
 import { narrate } from "../providers/llm.js";
+import { fetchHeroImage } from "../providers/pexels.js";
 
 const sqs = new SQSClient({ maxAttempts: 2 });
 const FEED_QUEUE_URL = process.env.FEED_QUEUE_URL ?? "";
@@ -597,7 +598,15 @@ async function processJob(jobId: string): Promise<void> {
     const narration = await narrate(llmInput, evidenceByDest);
     const narrationById = new Map(narration.narrations.map((n) => [n.destinationId, n]));
 
-    const cards: FeedCard[] = top.map((s) => {
+    // Step 6b: hero images (Pexels, illustration only — never evidence).
+    // At most 5 search calls per generation, far under Pexels' free
+    // 200 req/hour. Each lookup is individually guarded: a null resolves
+    // to "no photo" and the job continues; hero images can never fail it.
+    const heroImages = await Promise.all(
+      top.map((s) => fetchHeroImage(s.dest.name).catch(() => null)),
+    );
+
+    const cards: FeedCard[] = top.map((s, i) => {
       const n = narrationById.get(s.dest.id);
       const cautions =
         n && n.cautions.length > 0
@@ -608,6 +617,7 @@ async function processJob(jobId: string): Promise<void> {
         name: s.dest.name,
         country: s.dest.country,
         interestTags: s.dest.interestTags,
+        heroImage: heroImages[i] ?? null,
         score: s.breakdown.total,
         scoreBreakdown: s.breakdown,
         reasons: n?.reasons ?? [
