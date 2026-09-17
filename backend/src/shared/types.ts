@@ -143,6 +143,20 @@ export interface ScoreBreakdown {
   total: number;
 }
 
+/**
+ * Hero image attribution for a feed card. Supplied by Pexels at
+ * feed-generation time; stored on the card so snapshots stay immutable.
+ * Illustration only — never part of scoring or evidence.
+ */
+export interface HeroImage {
+  /** Direct CDN URL of a landscape rendition (images.pexels.com). */
+  url: string;
+  photographer: string;
+  photographerUrl: string;
+  /** Pexels photo page (credit-link target). */
+  pageUrl: string;
+}
+
 /** One ranked destination in a feed snapshot: an evidence packet, not a postcard. */
 export interface FeedCard {
   destinationId: string;
@@ -150,6 +164,12 @@ export interface FeedCard {
   country: string;
   /** Destination interest tags (for per-traveler re-scoring in trip recommendations). */
   interestTags: string[];
+  /**
+   * Optional hero photo (Pexels). ILLUSTRATION ONLY — never evidence, never
+   * scored, never cited. Null when no Pexels key is configured or the
+   * lookup failed; the card must render identically either way.
+   */
+  heroImage: HeroImage | null;
   score: number;
   scoreBreakdown: ScoreBreakdown;
   /** Exactly two plain-language sentences tied to score components. */
