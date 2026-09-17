@@ -280,6 +280,10 @@ export class TravelBookStack extends cdk.Stack {
     const ssmParams: Array<{ id: string; name: string; value: string; secure: boolean }> = [
       { id: 'LlmProvider', name: `/${PROJECT}/dev/llm/provider`, value: 'template', secure: false },
       { id: 'DuffelMode', name: `/${PROJECT}/dev/duffel/mode`, value: 'mock', secure: false },
+      // Pexels hero images: UNSET means "no key configured" — the worker
+      // skips photo lookups and cards render exactly as before. Set a real
+      // key out-of-band (SecureString, --overwrite) to enable images.
+      { id: 'PexelsApiKey', name: `/${PROJECT}/dev/pexels/api-key`, value: 'UNSET', secure: false },
     ];
     for (const p of ssmParams) {
       new ssm.StringParameter(this, p.id, {
