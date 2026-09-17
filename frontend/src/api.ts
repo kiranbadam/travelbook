@@ -9,6 +9,7 @@ import type {
   FriendRequest,
   GetFeedJobResponse,
   GroupRecommendations,
+  HeroImage,
   NormalizedPreferences,
   PostReactionRequest,
   PreferencesInput,
@@ -49,6 +50,7 @@ interface WireFeedCard {
   name?: unknown;
   country?: unknown;
   region?: unknown;
+  heroImage?: unknown;
   score?: unknown;
   scoreBreakdown?: Record<string, unknown>;
   riskPenalty?: unknown;
@@ -81,6 +83,30 @@ function wireStr(v: unknown, fallback = ''): string {
   return typeof v === 'string' ? v : fallback;
 }
 
+/**
+ * Normalize the backend's heroImage envelope. The wire shape is
+ * { url, photographer, photographerUrl, pageUrl } (see
+ * backend/src/shared/types.ts HeroImage). Anything missing or malformed —
+ * including heroImage itself — normalizes to null so the renderer falls
+ * back to the imageless layout instead of touching undefined.
+ */
+function wireHeroImage(v: unknown): HeroImage | null {
+  if (typeof v !== 'object' || v === null) return null;
+  const o = v as Record<string, unknown>;
+  const url = typeof o.url === 'string' ? o.url : '';
+  const photographer = typeof o.photographer === 'string' ? o.photographer : '';
+  if (!url || !photographer) return null;
+  return {
+    url,
+    photographer,
+    photographerUrl:
+      typeof o.photographerUrl === 'string' && o.photographerUrl
+        ? o.photographerUrl
+        : 'https://www.pexels.com',
+    pageUrl: typeof o.pageUrl === 'string' && o.pageUrl ? o.pageUrl : 'https://www.pexels.com',
+  };
+}
+
 function adaptFeedCard(wire: WireFeedCard, checkedAt: string): FeedCard {
   const sb = wire.scoreBreakdown ?? {};
   const refs = wireStrs(wire.evidenceRefs);
@@ -89,6 +115,7 @@ function adaptFeedCard(wire: WireFeedCard, checkedAt: string): FeedCard {
     name: wireStr(wire.name, 'Unknown destination'),
     country: wireStr(wire.country),
     region: typeof wire.region === 'string' ? wire.region : undefined,
+    heroImage: wireHeroImage(wire.heroImage),
     score: wireNum(wire.score),
     components: {
       airfare: wireNum(sb['airfare']),
