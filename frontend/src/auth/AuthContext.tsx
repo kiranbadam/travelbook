@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import type { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { isConfigured, loadConfig } from '../config';
+import { isPreviewMode } from '../preview-data';
 import type { AppConfig } from '../types';
 import {
   confirmSignUp as cognitoConfirm,
@@ -114,6 +115,7 @@ export function RequireAuth({ children }: { children: ReactNode }) {
   const { tokens, loading } = useAuth();
   const location = useLocation();
   if (loading) return null;
-  if (!tokens) return <Navigate to="/login" replace state={{ from: location.pathname }} />;
+  // PREVIEW-ONLY: ?preview skips Cognito so design reviews need no credentials.
+  if (!tokens && !isPreviewMode()) return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   return <>{children}</>;
 }

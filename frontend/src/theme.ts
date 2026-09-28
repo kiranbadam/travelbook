@@ -1,24 +1,15 @@
-import { defineTheme } from '@astryxdesign/core/theme';
-import { neutralTheme } from '@astryxdesign/theme-neutral/built';
+import { boldTheme } from './theme-bold/boldTheme';
 
 /**
- * TravelBook brand theme.
+ * TravelBook brand theme — "Bold social" direction (chosen 2026-09-28).
  *
- * Base: Astryx Neutral (warm grays, system fonts, Lucide icons). Brand delta:
- * a deep-sea teal accent — light mode `#0B7A64`, dark mode `#3FD6A4` — seeded
- * through `color.accent` so the full derived accent ramp (muted, text, icon
- * tokens) regenerates per scheme instead of overriding a single token.
+ * Base: scaffolded from the Astryx Y2K example theme via
+ * `astryx theme add y2k`, then re-skinned as editable source in
+ * `src/theme-bold/`: hot-pink accent, periwinkle body, bubbly radii,
+ * heavy Poppins display type. See src/theme-bold/boldTheme.ts.
  *
- * Light/dark surfaces come from the base theme's onLight/onDark surfaces;
- * the <Theme> provider's `mode` prop flips them. The prebuilt
- * `@astryxdesign/theme-neutral/theme.css` (imported in index.css) supplies
- * the base tokens; this theme injects only the brand delta at runtime.
+ * The prebuilt `@astryxdesign/theme-neutral/theme.css` (imported in
+ * index.css) supplies fallback base tokens; this theme injects the full
+ * Bold token set at runtime via the <Theme> provider.
  */
-export const travelBookTheme = defineTheme({
-  name: 'travelbook',
-  extends: neutralTheme,
-  color: {
-    accent: ['#0B7A64', '#3FD6A4'],
-    neutralStyle: 'warm',
-  },
-});
+export const travelBookTheme = boldTheme;

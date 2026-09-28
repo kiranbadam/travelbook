@@ -1,11 +1,20 @@
-import { Badge, Banner, Button, EmptyState, Heading, ProgressBar } from '@astryxdesign/core';
+import { Badge, Banner, Button, EmptyState, ProgressBar } from '@astryxdesign/core';
 import { useEffect, useState } from 'react';
 import { useApi } from '../useApi';
+import { getPreviewSnapshot, isPreviewMode } from '../preview-data';
 import type { ApiError, FeedJobProgress, FeedJobStatus, FeedSnapshot } from '../types';
 import { timeAgo } from '../components/bits';
 import { FeedCard } from './FeedCard';
 
 const POLL_MS = 3000;
+
+/* Preview-only feed-generation theater: stages shown while "generating". */
+const PREVIEW_STAGES = [
+  'Checking fares, weather & events',
+  'Scoring destinations against your prefs',
+  'Hunting luxury car events',
+  'Polishing your lineup',
+];
 
 function isTerminal(status: FeedJobStatus): boolean {
   return status === 'READY' || status === 'PARTIAL' || status === 'FAILED';
@@ -13,6 +22,7 @@ function isTerminal(status: FeedJobStatus): boolean {
 
 export function FeedScreen() {
   const api = useApi();
+  const preview = isPreviewMode();
 
   const [snapshot, setSnapshot] = useState<FeedSnapshot | null>(null);
   const [shared, setShared] = useState(false);
@@ -29,6 +39,12 @@ export function FeedScreen() {
 
   /* Load the latest snapshot on mount, if one exists. */
   useEffect(() => {
+    if (preview) {
+      // PREVIEW-ONLY: seed mock cards; no auth, no backend.
+      setSnapshot(getPreviewSnapshot());
+      setInitialLoading(false);
+      return;
+    }
     let cancelled = false;
     (async () => {
       try {
@@ -43,11 +59,11 @@ export function FeedScreen() {
     return () => {
       cancelled = true;
     };
-  }, [api]);
+  }, [api, preview]);
 
   /* Poll the job until it reaches a terminal state. */
   useEffect(() => {
-    if (!jobId || !polling) return;
+    if (preview || !jobId || !polling) return;
     let cancelled = false;
     async function poll() {
       try {
@@ -82,9 +98,37 @@ export function FeedScreen() {
       cancelled = true;
       clearInterval(timer);
     };
-  }, [jobId, polling, api]);
+  }, [jobId, polling, api, preview]);
 
   async function startJob() {
+    if (preview) {
+      // PREVIEW-ONLY: simulate a feed generation run against the mock data.
+      setStarting(true);
+      setJobError(null);
+      setJobStatus('RUNNING');
+      setPolling(true);
+      let step = 0;
+      setProgress({ completedSteps: 0, totalSteps: PREVIEW_STAGES.length, currentStage: PREVIEW_STAGES[0] });
+      const timer = setInterval(() => {
+        step += 1;
+        if (step >= PREVIEW_STAGES.length) {
+          clearInterval(timer);
+          setPolling(false);
+          setJobStatus('READY');
+          setProgress(null);
+          setSnapshot(getPreviewSnapshot());
+          setHiddenIds(new Set());
+          setStarting(false);
+        } else {
+          setProgress({
+            completedSteps: step,
+            totalSteps: PREVIEW_STAGES.length,
+            currentStage: PREVIEW_STAGES[step],
+          });
+        }
+      }, 700);
+      return;
+    }
     setStarting(true);
     setJobError(null);
     setLoadError(null);
@@ -111,6 +155,11 @@ export function FeedScreen() {
 
   async function toggleShare() {
     if (sharing) return;
+    if (preview) {
+      // PREVIEW-ONLY: local toggle, no backend.
+      setShared((s) => !s);
+      return;
+    }
     setSharing(true);
     try {
       const res = await api.shareFeed(shared ? 'private' : 'friends');
@@ -121,16 +170,17 @@ export function FeedScreen() {
   }
 
   return (
-    <div className="tb-page">
-      <div className="tb-spread">
-        <div>
-          <Heading level={1}>Your feed</Heading>
-          <p className="tb-muted" style={{ marginTop: 0 }}>
-            Destination ideas scored against your preferences — every fact carries
-            its source. {shared ? '👥 Shared with friends.' : '🔒 Private until you share it.'}
-          </p>
-        </div>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+    <div className="tb-page tb-feed">
+      <div>
+        <span className="tb-feed-eyebrow">✨ Fresh drop{preview ? ' · Preview' : ''}</span>
+        <h1 className="tb-feed-title">
+          Your <span className="tb-accent-word">feed</span>
+        </h1>
+        <p className="tb-feed-sub">
+          Destination ideas scored against your preferences — every fact carries
+          its source. {shared ? '👥 Shared with friends.' : '🔒 Private until you share it.'}
+        </p>
+        <div className="tb-feed-ctas">
           {snapshot && (
             <Button
               label={shared ? 'Unshare feed' : 'Share with friends'}
@@ -140,7 +190,7 @@ export function FeedScreen() {
             />
           )}
           <Button
-            label={snapshot ? 'Generate new ideas' : 'Generate ideas'}
+            label={snapshot ? '✨ Generate new ideas' : '✨ Generate ideas'}
             variant="primary"
             isLoading={starting || working}
             clickAction={startJob}
@@ -208,12 +258,12 @@ export function FeedScreen() {
         <EmptyState
           title="No ideas yet"
           description="Set your preferences, then generate a feed. We'll check fares, weather, events, and travel risks for you."
-          actions={<Button label="Generate ideas" variant="primary" clickAction={startJob} />}
+          actions={<Button label="✨ Generate ideas" variant="primary" clickAction={startJob} />}
         />
       ) : (
         snapshot && (
           <>
-            <p className="tb-muted" style={{ fontSize: 13 }}>
+            <p className="tb-muted" style={{ fontSize: 13, marginTop: 20 }}>
               Snapshot generated {timeAgo(snapshot.createdAt)}{' '}
               {snapshot.state === 'PARTIAL' ? (
                 <Badge variant="warning" label="Partial" />
@@ -225,10 +275,10 @@ export function FeedScreen() {
               <EmptyState
                 title="Everything is hidden"
                 description="You hid every card in this snapshot. Generate new ideas or clear your reactions."
-                actions={<Button label="Generate new ideas" variant="primary" clickAction={startJob} />}
+                actions={<Button label="✨ Generate new ideas" variant="primary" clickAction={startJob} />}
               />
             ) : (
-              <div style={{ display: 'grid', gap: 16 }}>
+              <div className="tb-posts">
                 {visibleCards.map((card) => (
                   <FeedCard
                     key={card.destinationId}

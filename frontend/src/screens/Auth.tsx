@@ -1,9 +1,39 @@
-import { Banner, Button, Card, Heading, TextInput } from '@astryxdesign/core';
+import { Banner, Button, Card, TextInput } from '@astryxdesign/core';
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 
 type Mode = 'signin' | 'signup' | 'confirm';
+
+const MODE_COPY: Record<Mode, { eyebrow: string; title: React.ReactNode; sub: string }> = {
+  signin: {
+    eyebrow: '✈️ TravelBook',
+    title: (
+      <>
+        Welcome <span className="tb-accent-word">back</span>
+      </>
+    ),
+    sub: 'Sign in to get destination ideas grounded in evidence.',
+  },
+  signup: {
+    eyebrow: '✈️ TravelBook',
+    title: (
+      <>
+        Join <span className="tb-accent-word">TravelBook</span>
+      </>
+    ),
+    sub: 'Create an account — your feed stays private until you share it.',
+  },
+  confirm: {
+    eyebrow: '📧 Check your email',
+    title: (
+      <>
+        Confirm <span className="tb-accent-word">account</span>
+      </>
+    ),
+    sub: 'Enter the 6-digit code we just emailed you.',
+  },
+};
 
 function friendlyError(err: unknown): string {
   const msg = err instanceof Error ? err.message : String(err);
@@ -36,6 +66,7 @@ export function AuthScreen() {
   const [error, setError] = useState<string | null>(null);
 
   const go = (path: string) => navigate(path, { replace: true });
+  const copy = MODE_COPY[mode];
 
   async function handleSignIn() {
     setBusy(true);
@@ -81,12 +112,13 @@ export function AuthScreen() {
   }
 
   return (
-    <div className="tb-page" style={{ maxWidth: 460 }}>
-      <Heading level={1}>Welcome to TravelBook</Heading>
-      <p className="tb-muted">Sign in to get destination ideas grounded in evidence.</p>
+    <div className="tb-auth">
+      <span className="tb-feed-eyebrow">{copy.eyebrow}</span>
+      <h1 className="tb-feed-title">{copy.title}</h1>
+      <p className="tb-feed-sub">{copy.sub}</p>
 
       {!configured && (
-        <div className="tb-section">
+        <div className="tb-section" style={{ marginTop: 16 }}>
           <Banner
             status="warning"
             title="Sign-in is not configured"
@@ -95,6 +127,7 @@ export function AuthScreen() {
         </div>
       )}
 
+      <div className="tb-section" style={{ marginTop: 20 }}>
       <Card>
         {error && (
           <div className="tb-section">
@@ -121,7 +154,7 @@ export function AuthScreen() {
                 placeholder="6-digit code from your email"
               />
             </div>
-            <div className="tb-row">
+            <div className="tb-auth-ctas">
               <Button label="Confirm account" variant="primary" isLoading={busy} isDisabled={!configured} clickAction={handleConfirm} />
               <Button label="Back to sign in" variant="ghost" clickAction={() => setMode('signin')} />
             </div>
@@ -147,7 +180,7 @@ export function AuthScreen() {
               />
             </div>
             {mode === 'signin' ? (
-              <div className="tb-row">
+              <div className="tb-auth-ctas">
                 <Button
                   label="Sign in"
                   variant="primary"
@@ -159,7 +192,7 @@ export function AuthScreen() {
                 <Button label="I have a code" variant="ghost" clickAction={() => setMode('confirm')} />
               </div>
             ) : (
-              <div className="tb-row">
+              <div className="tb-auth-ctas">
                 <Button
                   label="Create account"
                   variant="primary"
@@ -173,6 +206,7 @@ export function AuthScreen() {
           </>
         )}
       </Card>
+      </div>
 
       <p className="tb-note">
         Private alpha. Your feed is private until you explicitly share it, and friend

@@ -1,9 +1,9 @@
-import { Badge, Card, Heading } from '@astryxdesign/core';
+import { Badge, Card } from '@astryxdesign/core';
 import { useState } from 'react';
 import { useApi } from '../useApi';
+import { isPreviewMode } from '../preview-data';
 import type { FeedCard as FeedCardT, ReactionKind } from '../types';
 import {
-  CardSection,
   FareBlock,
   RiskBlock,
   ScoreBars,
@@ -12,13 +12,14 @@ import {
 } from '../components/bits';
 
 /**
- * A feed card is an evidence packet, not a postcard.
+ * Bold-social feed post: photo-forward, Instagram-energy.
  *
- * Layout (per the architecture plan):
- *   Fit        → score + deterministic breakdown bars + "Why it matches"
- *   Evidence   → fare (LIVE vs ILLUSTRATIVE), weather window, events
- *   Caution    → "What could change": expiry, risks, uncertainties
- *   Reactions  → Like / Save / Hide (optimistic)
+ * Layout:
+ *   Hero       → full-bleed photo, gradient scrim, overlaid destination name,
+ *                hot-pink score pill, Pexels attribution below
+ *   Actions    → ♥ Like / 🔖 Save / 🙈 Hide action bar (optimistic)
+ *   Body       → Why it matches / Agent's take / Score breakdown /
+ *                What we found / What could change / Sources
  *
  * Model narration is rendered clearly labeled as the agent's take — it is
  * additive; the score components and source chips are the explanation.
@@ -36,13 +37,19 @@ export function FeedCard({
   const api = useApi();
   const [reaction, setReaction] = useState<ReactionKind | null>(card.reaction ?? null);
   const [reacting, setReacting] = useState(false);
+  const [popping, setPopping] = useState(false);
 
   async function react(kind: ReactionKind) {
     // Reactions are sticky and replace each other (like ⇄ save); the contract
     // has no "un-react" endpoint, so there is no toggle-off.
     const prev = reaction;
     setReaction(kind);
+    if (kind === 'like') {
+      setPopping(true);
+      window.setTimeout(() => setPopping(false), 400);
+    }
     if (kind === 'hide') onHidden(card.destinationId);
+    if (isPreviewMode()) return; // preview: keep the optimistic state, no backend
     setReacting(true);
     try {
       await api.postReaction({ destinationId: card.destinationId, kind });
@@ -58,23 +65,32 @@ export function FeedCard({
   );
 
   return (
-    <Card>
+    <Card className="tb-post">
       {card.heroImage && (
-        <figure style={{ margin: '0 0 12px' }}>
-          <img
-            src={card.heroImage.url}
-            alt={`${card.name} — travel photo`}
-            loading="lazy"
-            style={{
-              width: '100%',
-              display: 'block',
-              borderRadius: 12,
-              aspectRatio: '16 / 9',
-              objectFit: 'cover',
-              background: '#0f172a',
-            }}
-          />
-          <figcaption className="tb-muted" style={{ fontSize: 12, marginTop: 4 }}>
+        <>
+          <div className="tb-post-hero">
+            <img
+              src={card.heroImage.url}
+              alt={`${card.name} — travel photo`}
+              loading="lazy"
+            />
+            <div className="tb-post-scrim" aria-hidden="true" />
+            <div
+              className="tb-post-score"
+              aria-label={`Score ${Math.round(card.score)} out of 100`}
+            >
+              {Math.round(card.score)}
+              <small>/100</small>
+            </div>
+            <div className="tb-post-titleblock">
+              <div className="tb-post-locale">
+                {card.country}
+                {card.region ? ` · ${card.region}` : ''}
+              </div>
+              <h2 className="tb-post-name">{card.name}</h2>
+            </div>
+          </div>
+          <p className="tb-post-credit">
             Photo by{' '}
             <a href={card.heroImage.photographerUrl} target="_blank" rel="noreferrer">
               {card.heroImage.photographer}
@@ -83,46 +99,68 @@ export function FeedCard({
             <a href={card.heroImage.pageUrl} target="_blank" rel="noreferrer">
               Pexels
             </a>
-          </figcaption>
-        </figure>
-      )}
-      <div className="tb-spread">
-        <div>
-          <Heading level={2}>
-            {card.name}
-            <span className="tb-muted" style={{ fontWeight: 400 }}>
-              {' '}
-              · {card.country}
-              {card.region ? ` · ${card.region}` : ''}
-            </span>
-          </Heading>
-        </div>
-        <div className="tb-score-total" aria-label={`Score ${Math.round(card.score)} out of 100`}>
-          <span className="tb-score-number">{Math.round(card.score)}</span>
-          <span className="tb-muted">/ 100</span>
-        </div>
-      </div>
-
-      {entryUnknown && (
-        <div style={{ marginTop: 8 }}>
-          <Badge variant="warning" label="Verify before booking — entry rules unresolved" />
-        </div>
+          </p>
+        </>
       )}
 
-      <CardSection title="Why it matches">
-        <ul className="tb-reasons">
+      {!hideReactions && (
+        <div className="tb-post-actions" role="group" aria-label="React to this destination">
+          <button
+            type="button"
+            className={`tb-action${popping ? ' tb-action-pop' : ''}`}
+            aria-pressed={reaction === 'like'}
+            aria-label="Like this destination"
+            disabled={reacting}
+            onClick={() => react('like')}
+          >
+            <span aria-hidden="true">{reaction === 'like' ? '♥' : '♡'}</span>
+            <span className="tb-action-label">Like</span>
+          </button>
+          <button
+            type="button"
+            className="tb-action"
+            aria-pressed={reaction === 'save'}
+            aria-label="Save this destination"
+            disabled={reacting}
+            onClick={() => react('save')}
+          >
+            <span aria-hidden="true">🔖</span>
+            <span className="tb-action-label">Save</span>
+          </button>
+          <button
+            type="button"
+            className="tb-action"
+            aria-pressed={reaction === 'hide'}
+            aria-label="Hide this destination"
+            disabled={reacting}
+            onClick={() => react('hide')}
+          >
+            <span aria-hidden="true">🙈</span>
+            <span className="tb-action-label">Hide</span>
+          </button>
+        </div>
+      )}
+
+      <div className="tb-post-body">
+        {entryUnknown && (
+          <div style={{ marginTop: 12 }}>
+            <Badge variant="warning" label="Verify before booking — entry rules unresolved" />
+          </div>
+        )}
+
+        <h3 className="tb-microlabel">Why it matches</h3>
+        <ul className="tb-post-reasons">
           {(card.reasons ?? []).map((reason, i) => (
             <li key={i}>{reason}</li>
           ))}
         </ul>
         {card.narration && (
-          <p className="tb-narration">
+          <p className="tb-post-take">
             <strong>Agent&apos;s take:</strong> {card.narration}
           </p>
         )}
-      </CardSection>
 
-      <CardSection title="Score breakdown">
+        <h3 className="tb-microlabel">Score breakdown</h3>
         <ScoreBars
           components={
             card.components ?? {
@@ -136,9 +174,8 @@ export function FeedCard({
           }
           riskPenalty={card.riskPenalty}
         />
-      </CardSection>
 
-      <CardSection title="What we found">
+        <h3 className="tb-microlabel">What we found</h3>
         <div className="tb-grid-2">
           <div>
             {card.fare ? (
@@ -187,61 +224,28 @@ export function FeedCard({
             ))}
           </div>
         )}
-      </CardSection>
 
-      {((card.risks ?? []).length > 0 || (card.uncertainties ?? []).length > 0) && (
-        <CardSection title="What could change">
-          {(card.risks ?? []).map((risk, i) => (
-            <RiskBlock key={i} risk={risk} />
-          ))}
-          {(card.uncertainties ?? []).length > 0 && (
-            <ul className="tb-reasons" style={{ marginTop: 8 }}>
-              {(card.uncertainties ?? []).map((u, i) => (
-                <li key={i} className="tb-muted">
-                  {u}
-                </li>
-              ))}
-            </ul>
-          )}
-        </CardSection>
-      )}
+        {((card.risks ?? []).length > 0 || (card.uncertainties ?? []).length > 0) && (
+          <>
+            <h3 className="tb-microlabel">What could change</h3>
+            {(card.risks ?? []).map((risk, i) => (
+              <RiskBlock key={i} risk={risk} />
+            ))}
+            {(card.uncertainties ?? []).length > 0 && (
+              <ul className="tb-reasons" style={{ marginTop: 8 }}>
+                {(card.uncertainties ?? []).map((u, i) => (
+                  <li key={i} className="tb-muted">
+                    {u}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </>
+        )}
 
-      {!hideReactions && (
-        <CardSection title="Reactions">
-          <div className="tb-reactions" role="group" aria-label="React to this destination">
-            <button
-              type="button"
-              className="tb-reaction"
-              aria-pressed={reaction === 'like'}
-              disabled={reacting}
-              onClick={() => react('like')}
-            >
-              👍 Like
-            </button>
-            <button
-              type="button"
-              className="tb-reaction"
-              aria-pressed={reaction === 'save'}
-              disabled={reacting}
-              onClick={() => react('save')}
-            >
-              🔖 Save
-            </button>
-            <button
-              type="button"
-              className="tb-reaction"
-              aria-pressed={reaction === 'hide'}
-              disabled={reacting}
-              onClick={() => react('hide')}
-            >
-              🙈 Hide
-            </button>
-          </div>
-        </CardSection>
-      )}
-
-      <div className="tb-card-section">
-        <SourceChips sources={card.sources ?? []} />
+        <div className="tb-post-sources">
+          <SourceChips sources={card.sources ?? []} />
+        </div>
       </div>
     </Card>
   );

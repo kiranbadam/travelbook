@@ -90,8 +90,11 @@ export function PreferencesScreen() {
 
   return (
     <div className="tb-page">
-      <Heading level={1}>Travel preferences</Heading>
-      <p className="tb-muted">
+      <span className="tb-feed-eyebrow">🎯 Tune your compass</span>
+      <h1 className="tb-feed-title">
+        Travel <span className="tb-accent-word">preferences</span>
+      </h1>
+      <p className="tb-feed-sub">
         Tell TravelBook what a good trip looks like. These become hard filters
         (airfare ceiling, temperature band) and soft signals (interests) for scoring.
       </p>

@@ -4,6 +4,7 @@ import { useApi } from '../useApi';
 import type { Friend, FriendFeed, FriendRequest } from '../types';
 import { timeAgo } from '../components/bits';
 import { FeedCard } from './FeedCard';
+import { getPreviewFriendFeed, getPreviewFriends, getPreviewIncoming, isPreviewMode } from '../preview-data';
 
 /**
  * Social, slice 3. Privacy defaults (per the architecture plan):
@@ -12,6 +13,7 @@ import { FeedCard } from './FeedCard';
  */
 export function FriendsScreen() {
   const api = useApi();
+  const preview = isPreviewMode();
 
   const [friends, setFriends] = useState<Friend[]>([]);
   const [incoming, setIncoming] = useState<FriendRequest[]>([]);
@@ -25,6 +27,21 @@ export function FriendsScreen() {
   const [viewingLoading, setViewingLoading] = useState(false);
 
   const load = useCallback(async () => {
+    if (preview) {
+      // PREVIEW-ONLY: seed mock friends; no backend.
+      setFriends(getPreviewFriends());
+      setIncoming(getPreviewIncoming());
+      setLoading(false);
+      // PREVIEW-ONLY: ?friendfeed=1 opens the shared-feed panel for screenshots.
+      try {
+        if (new URLSearchParams(window.location.search).has('friendfeed')) {
+          setViewing(getPreviewFriendFeed());
+        }
+      } catch {
+        /* ignore */
+      }
+      return;
+    }
     try {
       const [f, r] = await Promise.all([api.listFriends(), api.listIncomingRequests()]);
       setFriends(f.friends);
@@ -34,13 +51,20 @@ export function FriendsScreen() {
     } finally {
       setLoading(false);
     }
-  }, [api]);
+  }, [api, preview]);
 
   useEffect(() => {
     void load();
   }, [load]);
 
   async function sendRequest() {
+    if (preview) {
+      // PREVIEW-ONLY: local confirmation; no backend.
+      setSentNote(true);
+      setEmail('');
+      setUserId('');
+      return;
+    }
     setSending(true);
     setError(null);
     setSentNote(false);
@@ -61,6 +85,18 @@ export function FriendsScreen() {
   }
 
   async function accept(requestId: string) {
+    if (preview) {
+      // PREVIEW-ONLY: move the request into the friends list locally.
+      const req = incoming.find((r) => r.requestId === requestId);
+      if (req) {
+        setIncoming((prev) => prev.filter((r) => r.requestId !== requestId));
+        setFriends((prev) => [
+          ...prev,
+          { userSub: req.fromSub, displayName: req.fromEmail?.split('@')[0] ?? req.fromSub.slice(0, 8), email: req.fromEmail, friendsSince: new Date().toISOString() },
+        ]);
+      }
+      return;
+    }
     setError(null);
     try {
       await api.acceptFriend(requestId);
@@ -71,6 +107,11 @@ export function FriendsScreen() {
   }
 
   async function viewFeed(friend: Friend) {
+    if (preview) {
+      // PREVIEW-ONLY: seed the shared-feed panel; no backend.
+      setViewing(getPreviewFriendFeed());
+      return;
+    }
     setViewingLoading(true);
     setError(null);
     try {
@@ -84,19 +125,22 @@ export function FriendsScreen() {
 
   return (
     <div className="tb-page">
-      <Heading level={1}>Friends</Heading>
-      <p className="tb-muted">
+      <span className="tb-feed-eyebrow">👥 Your circle</span>
+      <h1 className="tb-feed-title">
+        Friends
+      </h1>
+      <p className="tb-feed-sub">
         🔒 Your feed stays private until you share it, and requests need mutual
         acceptance — both sides must agree before anything is visible.
       </p>
 
       {error && (
-        <div className="tb-section">
+        <div className="tb-section" style={{ marginTop: 16 }}>
           <Banner status="error" title="Something went wrong" description={error} isDismissable onDismiss={() => setError(null)} />
         </div>
       )}
 
-      <div className="tb-grid-2">
+      <div className="tb-grid-2" style={{ marginTop: 20 }}>
         <div className="tb-section">
           <Card>
             <Heading level={2}>Send a friend request</Heading>
@@ -140,8 +184,11 @@ export function FriendsScreen() {
                 <p className="tb-muted">No pending requests.</p>
               ) : (
                 incoming.map((r) => (
-                  <div key={r.requestId} className="tb-spread" style={{ marginBottom: 8 }}>
-                    <span>
+                  <div key={r.requestId} className="tb-friend-row">
+                    <span className="tb-avatar">
+                      {(r.fromEmail ?? r.fromSub).charAt(0).toUpperCase()}
+                    </span>
+                    <span className="tb-friend-meta">
                       <strong>{r.fromEmail ?? r.fromSub.slice(0, 8)}</strong>
                       <span className="tb-muted" style={{ fontSize: 13 }}>
                         {' '}
@@ -165,8 +212,11 @@ export function FriendsScreen() {
               <p className="tb-muted">No friends yet — send a request to get started.</p>
             ) : (
               friends.map((f) => (
-                <div key={f.userSub} className="tb-spread" style={{ marginBottom: 8 }}>
-                  <span>
+                <div key={f.userSub} className="tb-friend-row">
+                  <span className="tb-avatar">
+                    {(f.displayName ?? f.email ?? f.userSub).charAt(0).toUpperCase()}
+                  </span>
+                  <span className="tb-friend-meta">
                     <strong>{f.displayName ?? f.email ?? f.userSub.slice(0, 8)}</strong>
                     <span className="tb-muted" style={{ fontSize: 13 }}>
                       {' '}
@@ -191,9 +241,14 @@ export function FriendsScreen() {
         <div className="tb-section">
           <Card>
             <div className="tb-spread">
-              <Heading level={2}>
-                {viewing.friend.displayName ?? viewing.friend.email ?? 'Friend'}&apos;s shared feed
-              </Heading>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 12 }}>
+                <span className="tb-avatar">
+                  {(viewing.friend.displayName ?? viewing.friend.email ?? 'F').charAt(0).toUpperCase()}
+                </span>
+                <Heading level={2} style={{ margin: 0 }}>
+                  {viewing.friend.displayName ?? viewing.friend.email ?? 'Friend'}&apos;s shared feed
+                </Heading>
+              </span>
               <Button label="Close" variant="ghost" clickAction={() => setViewing(null)} />
             </div>
             <p className="tb-muted" style={{ fontSize: 13 }}>

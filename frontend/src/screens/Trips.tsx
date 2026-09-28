@@ -5,12 +5,14 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useApi } from '../useApi';
 import { useAuth } from '../auth/AuthContext';
 import type { GroupRecommendations, Trip, TripDetail } from '../types';
+import { getPreviewDestinationName, getPreviewRecommendations, getPreviewTripDetail, getPreviewTrips, isPreviewMode } from '../preview-data';
 
 /* --------------------------------- list ----------------------------------- */
 
 export function TripsScreen() {
   const api = useApi();
   const navigate = useNavigate();
+  const preview = isPreviewMode();
 
   const [trips, setTrips] = useState<Trip[]>([]);
   const [loading, setLoading] = useState(true);
@@ -20,6 +22,12 @@ export function TripsScreen() {
   const [creating, setCreating] = useState(false);
 
   const load = useCallback(async () => {
+    if (preview) {
+      // PREVIEW-ONLY: seed mock trips; no backend.
+      setTrips(getPreviewTrips());
+      setLoading(false);
+      return;
+    }
     try {
       const res = await api.listTrips();
       setTrips(res.trips);
@@ -28,13 +36,20 @@ export function TripsScreen() {
     } finally {
       setLoading(false);
     }
-  }, [api]);
+  }, [api, preview]);
 
   useEffect(() => {
     void load();
   }, [load]);
 
   async function create() {
+    if (preview) {
+      // PREVIEW-ONLY: jump to the seeded trip detail; no backend.
+      setName('');
+      setRange(null);
+      navigate('/trips/preview-trip-riviera?preview');
+      return;
+    }
     setCreating(true);
     setError(null);
     try {
@@ -55,19 +70,22 @@ export function TripsScreen() {
 
   return (
     <div className="tb-page">
-      <Heading level={1}>Trips</Heading>
-      <p className="tb-muted">
-        Plan together: members rank destinations, and group-fit recommendations
+      <span className="tb-feed-eyebrow">🧳 Plan together</span>
+      <h1 className="tb-feed-title">
+        Your <span className="tb-accent-word">trips</span>
+      </h1>
+      <p className="tb-feed-sub">
+        Members rank destinations, and group-fit recommendations
         keep the decision fair — no averaging away objections.
       </p>
 
       {error && (
-        <div className="tb-section">
+        <div className="tb-section" style={{ marginTop: 16 }}>
           <Banner status="error" title="Couldn't load trips" description={error} isDismissable onDismiss={() => setError(null)} />
         </div>
       )}
 
-      <div className="tb-section">
+      <div className="tb-section" style={{ marginTop: 20 }}>
         <Card>
           <Heading level={2}>New trip</Heading>
           <div className="tb-grid-2">
@@ -89,15 +107,15 @@ export function TripsScreen() {
       ) : (
         <div style={{ display: 'grid', gap: 12 }}>
           {trips.map((trip) => (
-            <Card key={trip.tripId}>
+            <Card key={trip.tripId} className="tb-trip-card">
               <div className="tb-spread">
                 <div>
-                  <strong>{trip.name}</strong>
+                  <p className="tb-trip-name">{trip.name}</p>
                   <p className="tb-muted" style={{ margin: '4px 0 0', fontSize: 13 }}>
                     {trip.startDate && trip.endDate ? `${trip.startDate} → ${trip.endDate}` : 'Dates TBD'}
                   </p>
                 </div>
-                <Button label="Open" variant="secondary" clickAction={() => navigate(`/trips/${trip.tripId}`)} />
+                <Button label="Open" variant="secondary" clickAction={() => navigate(`/trips/${trip.tripId}${preview ? '?preview' : ''}`)} />
               </div>
             </Card>
           ))}
@@ -131,6 +149,7 @@ export function TripDetailScreen() {
   const { id = '' } = useParams();
   const api = useApi();
   const { tokens } = useAuth();
+  const preview = isPreviewMode();
 
   const [trip, setTrip] = useState<TripDetail | null>(null);
   const [names, setNames] = useState<Map<string, string>>(new Map());
@@ -144,6 +163,15 @@ export function TripDetailScreen() {
   const [addingMember, setAddingMember] = useState(false);
 
   const load = useCallback(async () => {
+    if (preview) {
+      // PREVIEW-ONLY: seed mock trip detail; no backend.
+      const t = getPreviewTripDetail();
+      setTrip(t);
+      setRanking(t.myRanking.length > 0 ? t.myRanking : t.candidateIds);
+      setNames(new Map(t.candidateIds.map((cid) => [cid, getPreviewDestinationName(cid)])));
+      setLoading(false);
+      return;
+    }
     try {
       const { trip: t } = await api.getTrip(id);
       setTrip(t);
@@ -155,7 +183,7 @@ export function TripDetailScreen() {
     } finally {
       setLoading(false);
     }
-  }, [api, id]);
+  }, [api, id, preview]);
 
   useEffect(() => {
     void load();
@@ -173,6 +201,11 @@ export function TripDetailScreen() {
   }
 
   async function saveVote() {
+    if (preview) {
+      // PREVIEW-ONLY: local confirmation; no backend.
+      setSavedNote(true);
+      return;
+    }
     setSaving(true);
     setError(null);
     try {
@@ -186,6 +219,19 @@ export function TripDetailScreen() {
   }
 
   async function loadRecs() {
+    if (preview) {
+      // PREVIEW-ONLY: seed mock recommendations; no backend.
+      const recs = getPreviewRecommendations();
+      setRecs(recs);
+      setNames((prev) => {
+        const next = new Map(prev);
+        for (const cid of [recs.bestOverall, recs.bestBudget, recs.bestWeather, recs.bestSharedInterest]) {
+          if (cid && !next.has(cid)) next.set(cid, getPreviewDestinationName(cid));
+        }
+        return next;
+      });
+      return;
+    }
     setError(null);
     try {
       const { recommendations } = await api.getTripRecommendations(id);
@@ -205,6 +251,16 @@ export function TripDetailScreen() {
   async function addMember() {
     const sub = newMemberSub.trim();
     if (!sub) return;
+    if (preview) {
+      // PREVIEW-ONLY: append locally; no backend.
+      setTrip((t) =>
+        t
+          ? { ...t, members: [...t.members, { userSub: sub, displayName: sub.slice(0, 8), role: 'member' as const, joinedAt: new Date().toISOString() }] }
+          : t,
+      );
+      setNewMemberSub('');
+      return;
+    }
     setAddingMember(true);
     setError(null);
     try {
@@ -238,25 +294,29 @@ export function TripDetailScreen() {
 
   return (
     <div className="tb-page">
-      <Heading level={1}>{trip.name}</Heading>
-      <p className="tb-muted" style={{ marginTop: 0 }}>
+      <span className="tb-feed-eyebrow">🧳 Trip</span>
+      <h1 className="tb-feed-title">{trip.name}</h1>
+      <p className="tb-feed-sub">
         {trip.startDate && trip.endDate ? `${trip.startDate} → ${trip.endDate}` : 'Dates TBD'} ·{' '}
         {trip.members.length} member{trip.members.length === 1 ? '' : 's'} · 🔒 private trip
       </p>
 
       {error && (
-        <div className="tb-section">
+        <div className="tb-section" style={{ marginTop: 16 }}>
           <Banner status="error" title="Something went wrong" description={error} isDismissable onDismiss={() => setError(null)} />
         </div>
       )}
 
-      <div className="tb-grid-2">
+      <div className="tb-grid-2" style={{ marginTop: 20 }}>
         <div className="tb-section">
           <Card>
             <Heading level={2}>Members</Heading>
             {trip.members.map((m) => (
-              <div key={m.userSub} className="tb-row" style={{ marginBottom: 8 }}>
-                <span>
+              <div key={m.userSub} className="tb-friend-row">
+                <span className="tb-avatar">
+                  {(m.displayName ?? m.userSub).charAt(0).toUpperCase()}
+                </span>
+                <span className="tb-friend-meta">
                   <strong>{m.displayName ?? m.userSub.slice(0, 8)}</strong>{' '}
                   {m.userSub === tokens?.sub && <Badge variant="info" label="you" />}
                 </span>
@@ -318,10 +378,8 @@ export function TripDetailScreen() {
               <div className="tb-grid-2">
                 {recCards.map((r) => (
                   <Card key={r.title}>
-                    <p className="tb-muted" style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.04em', margin: '0 0 4px' }}>
-                      {r.title}
-                    </p>
-                    <p style={{ fontWeight: 700, margin: '0 0 4px' }}>
+                    <p className="tb-rec-label">{r.title}</p>
+                    <p className="tb-rec-name">
                       {r.id ? (names.get(r.id) ?? r.id) : '—'}
                     </p>
                     <p className="tb-muted" style={{ fontSize: 13, margin: 0 }}>{r.hint}</p>

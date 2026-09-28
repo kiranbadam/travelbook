@@ -36,8 +36,8 @@ export function Chrome({
       topNav={
         <TopNav
           heading={
-            <span style={{ fontWeight: 700, fontSize: 17, cursor: 'pointer' }} onClick={() => navigate('/feed')}>
-              ✈️ TravelBook
+            <span className="tb-brand" onClick={() => navigate('/feed')}>
+              ✈️ Travel<span className="tb-accent-word">Book</span>
             </span>
           }
           endContent={

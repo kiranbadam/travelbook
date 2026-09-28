@@ -313,3 +313,416 @@
   padding: 48px 20px;
   gap: 12px;
 }
+
+/* ---------------------------------------------------------------------------
+ * Bold social feed refresh (2026-09-28). Feed-first, photo-forward,
+ * Instagram-energy: narrow column, full-bleed hero images, heavy Poppins
+ * display type, hot-pink accents, social action bar.
+ * ------------------------------------------------------------------------- */
+
+.tb-feed {
+  max-width: 640px;
+}
+
+.tb-feed-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-accent);
+  background: var(--color-accent-muted);
+  border-radius: var(--radius-full);
+  padding: 6px 14px;
+  margin-bottom: 12px;
+}
+
+.tb-feed-title {
+  font-family: Poppins, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-size: clamp(34px, 7vw, 48px);
+  line-height: 1.05;
+  margin: 0 0 8px;
+  color: var(--color-text-primary);
+}
+.tb-feed-title .tb-accent-word {
+  color: var(--color-text-accent);
+}
+
+.tb-feed-sub {
+  margin: 0;
+  font-size: 15px;
+  color: var(--color-text-secondary);
+}
+
+.tb-feed-ctas {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.tb-posts {
+  display: grid;
+  gap: 28px;
+  margin-top: 28px;
+}
+
+/* Post card: Astryx Card with padding removed so the hero bleeds edge to edge. */
+.tb-post {
+  padding: 0;
+  overflow: hidden;
+}
+
+.tb-post-hero {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: #1b1830;
+}
+.tb-post-hero img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.tb-post-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(12, 8, 24, 0.28) 0%,
+    rgba(12, 8, 24, 0) 32%,
+    rgba(12, 8, 24, 0) 52%,
+    rgba(12, 8, 24, 0.74) 100%
+  );
+}
+.tb-post-score {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font-weight: 800;
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+  border-radius: var(--radius-full);
+  padding: 8px 16px;
+  box-shadow: var(--shadow-med);
+  line-height: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+}
+.tb-post-score small {
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0.85;
+}
+.tb-post-titleblock {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 14px;
+}
+.tb-post-locale {
+  color: #fff;
+  opacity: 0.92;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+}
+.tb-post-name {
+  color: #fff;
+  font-family: Poppins, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 800;
+  font-size: clamp(28px, 6vw, 38px);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  margin: 2px 0 0;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
+}
+.tb-post-credit {
+  text-align: right;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  padding: 6px 18px 0;
+}
+.tb-post-credit a {
+  color: var(--color-text-accent);
+  text-decoration: none;
+}
+
+/* Instagram-style action bar */
+.tb-post-actions {
+  display: flex;
+  gap: 2px;
+  padding: 8px 10px 0;
+  align-items: center;
+}
+.tb-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 24px;
+  line-height: 1;
+  padding: 8px 10px;
+  border-radius: var(--radius-full);
+  color: var(--color-text-primary);
+  transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+.tb-action:hover {
+  background: var(--color-accent-muted);
+}
+.tb-action:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+.tb-action .tb-action-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+.tb-action[aria-pressed="true"] {
+  color: var(--color-text-accent);
+}
+.tb-action[aria-pressed="true"] .tb-action-label {
+  color: var(--color-text-accent);
+}
+.tb-action-pop {
+  animation: tb-pop 0.35s ease;
+}
+@keyframes tb-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+.tb-action:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.tb-post-body {
+  padding: 4px 18px 18px;
+}
+
+.tb-microlabel {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-accent);
+  margin: 20px 0 8px;
+}
+
+.tb-post-reasons {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+.tb-post-reasons li {
+  position: relative;
+  padding-left: 22px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+.tb-post-reasons li::before {
+  content: "✦";
+  position: absolute;
+  left: 0;
+  color: var(--color-text-accent);
+  font-size: 13px;
+}
+
+.tb-post-take {
+  margin: 12px 0 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--color-text-secondary);
+  background: var(--color-accent-muted);
+  border-radius: var(--radius-element);
+  padding: 12px 14px;
+}
+.tb-post-take strong {
+  color: var(--color-text-accent);
+}
+
+/* Vibrant gradient score fills */
+.tb-scorebar-fill {
+  background: linear-gradient(90deg, var(--color-accent), var(--color-border-orange));
+}
+
+.tb-post-sources {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border);
+}
+
+@media (max-width: 720px) {
+  .tb-post-hero {
+    aspect-ratio: 1 / 1;
+  }
+  .tb-feed-ctas .astryx-button,
+  .tb-feed-ctas button {
+    flex: 1;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Bold social rollout (2026-09-28). Extends the feed's visual language to
+ * every screen: hot-pink accents, Poppins display type, pill CTAs, bubbly
+ * geometry. The tb-feed-* header classes double as the shared page header.
+ * ------------------------------------------------------------------------- */
+
+/* Brand wordmark in the top nav. */
+.tb-brand {
+  font-family: Poppins, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  color: var(--color-text-primary);
+}
+
+/* Interest chips: bolder type, poppier pressed state. */
+.tb-chip {
+  font-family: Poppins, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 600;
+  font-size: 13.5px;
+  padding: 9px 18px;
+}
+.tb-chip[aria-pressed="true"] {
+  box-shadow: 0 3px 14px rgba(230, 0, 126, 0.4);
+}
+
+/* Trip list cards. */
+.tb-trip-card {
+  border-radius: 20px;
+  padding: 20px 22px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.tb-trip-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(230, 0, 126, 0.12);
+}
+.tb-trip-name {
+  font-family: Poppins, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 700;
+  font-size: 19px;
+  letter-spacing: -0.01em;
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+/* Friend avatar: gradient initial circle. */
+.tb-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #E6007E, #FF5CA8);
+  color: #fff;
+  font-family: Poppins, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+}
+.tb-friend-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+}
+.tb-friend-row + .tb-friend-row {
+  border-top: 1px solid var(--color-border);
+}
+.tb-friend-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Vote rows: bubbly rank pills. */
+.tb-vote-row {
+  border-radius: 16px;
+  padding: 10px 14px 10px 10px;
+}
+.tb-vote-rank {
+  background: var(--color-accent);
+  color: #fff;
+  border-radius: 999px;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: Poppins, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* Group-fit recommendation cards. */
+.tb-rec-label {
+  font-family: Poppins, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-accent);
+  margin: 0 0 4px;
+}
+.tb-rec-name {
+  font-family: Poppins, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+  margin: 0 0 4px;
+  color: var(--color-text-primary);
+}
+
+/* Mobile overflow guard: grid/flex items must be allowed to shrink below
+ * their min-content, otherwise nowrap buttons (vote rows) force cards wider
+ * than the viewport on small screens. */
+.tb-grid-2 > * {
+  min-width: 0;
+}
+.tb-vote-name {
+  min-width: 0;
+}
+.tb-vote-row {
+  flex-wrap: wrap;
+}
+
+/* Auth: centered column, full-width CTAs on small screens. */
+.tb-auth {
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 24px 20px 64px;
+}
+.tb-auth-ctas {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+@media (max-width: 720px) {
+  .tb-auth-ctas .astryx-button,
+  .tb-auth-ctas button {
+    flex: 1;
+  }
+}
